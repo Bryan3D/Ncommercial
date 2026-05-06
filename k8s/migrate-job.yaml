@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: naguabo-db-migrate
+  namespace: naguabo-commercial
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: naguabo/commercial-app:latest
+          command:
+            - sh
+            - -c
+            - "npx prisma migrate deploy && node prisma/seed.js"
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: naguabo-secrets
+                  key: DATABASE_URL

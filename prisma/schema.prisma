@@ -1,0 +1,115 @@
+// Naguabo Commercial - Database Schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  password  String
+  role      Role     @default(CUSTOMER)
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+  STAFF
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  icon     String?
+  products Product[]
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String      @db.Text
+  price       Float
+  comparePrice Float?
+  stock       Int         @default(0)
+  barcode     String      @unique
+  sku         String      @unique
+  imageUrl    String
+  brand       String?
+  rating      Float       @default(0)
+  reviewCount Int         @default(0)
+  featured    Boolean     @default(false)
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id])
+  orderItems  OrderItem[]
+  scans       BarcodeScan[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  orderNumber  String      @unique
+  userId       String?
+  user         User?       @relation(fields: [userId], references: [id])
+  guestEmail   String?
+  guestName    String?
+  guestPhone   String?
+  status       OrderStatus @default(PENDING)
+  subtotal     Float
+  tax          Float
+  shipping     Float
+  total        Float
+  stripeId     String?     @unique
+  paymentStatus String     @default("pending")
+  items        OrderItem[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+}
+
+model BarcodeScan {
+  id          String   @id @default(cuid())
+  barcode     String
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id])
+  action      String   // "RECEIVE" | "ADJUST" | "SELL" | "AUDIT"
+  quantity    Int
+  scannedBy   String   // user id of staff
+  scannedAt   DateTime @default(now())
+  notes       String?
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  sessionId String
+  role      String   // "user" | "assistant"
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+}

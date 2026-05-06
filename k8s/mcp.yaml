@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: naguabo-mcp
+  namespace: naguabo-commercial
+  labels:
+    app: naguabo-mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: naguabo-mcp
+  template:
+    metadata:
+      labels:
+        app: naguabo-mcp
+    spec:
+      containers:
+        - name: mcp
+          image: naguabo/commercial-mcp:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4000
+              name: mcp
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: naguabo-secrets
+                  key: DATABASE_URL
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "50m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: naguabo-mcp
+  namespace: naguabo-commercial
+spec:
+  selector:
+    app: naguabo-mcp
+  ports:
+    - port: 4000
+      targetPort: 4000
+  type: ClusterIP
