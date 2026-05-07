@@ -2,15 +2,13 @@
   "name": "naguabo-commercial",
   "version": "1.0.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "mcp": "node mcp-server/server.js",
-    "db:push": "prisma db push",
-    "db:seed": "node prisma/seed.js"
-  },
+"scripts": {
+  "dev": "next dev",
+  "build": "prisma generate && next build",
+  "start": "next start",
+  "lint": "next lint",
+  "postinstall": "prisma generate"
+},
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
     "@prisma/client": "^5.22.0",
