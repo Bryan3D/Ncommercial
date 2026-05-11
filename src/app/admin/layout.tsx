@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LayoutDashboard, Package, BarChart3, ScanLine, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Package, BarChart3, ScanLine, MessageSquare, ShoppingCart } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,6 +14,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <nav className="space-y-1 text-sm">
               <Link href="/admin" className="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100">
                 <LayoutDashboard className="w-4 h-4" /> Dashboard
+              </Link>
+              <Link href="/admin/pos" className="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100 font-medium text-brand">
+                <ShoppingCart className="w-4 h-4" /> POS Terminal
               </Link>
               <Link href="/admin/inventory" className="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100">
                 <Package className="w-4 h-4" /> Inventory

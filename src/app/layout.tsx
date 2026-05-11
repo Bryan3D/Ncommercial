@@ -1,11 +1,10 @@
-
-
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
+import { ThemeProvider, themeScript } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "Naguabo Commercial — Tu Ferretería de Confianza",
@@ -21,13 +20,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col bg-gray-50">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <ChatWidget />
-        <WhatsAppFloat />
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Runs before first paint — prevents dark-mode flash on reload */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="min-h-screen flex flex-col bg-gray-50 dark:bg-slate-900 transition-colors duration-200">
+        <ThemeProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <ChatWidget />
+          <WhatsAppFloat />
+        </ThemeProvider>
       </body>
     </html>
   );

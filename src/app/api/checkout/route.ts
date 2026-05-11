@@ -1,13 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe, formatAmountForStripe } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
-import { sendWhatsAppMessage } from '@/lib/whatsapp';
+import { inventoryService } from '@/lib/inventory-service';
+import { eventBus } from '@/lib/event-bus';
+import '@/lib/whatsapp-observer'; // register WhatsApp listeners
 
 export async function POST(req: NextRequest) {
   try {
     const { items, customer, totals } = await req.json();
     if (!items || items.length === 0) {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
+    }
+
+    // Verify stock before accepting the order
+    const stockCheck = await inventoryService.checkAvailability(
+      items.map((it: { productId: string; quantity: number }) => ({
+        productId: it.productId,
+        quantity: it.quantity,
+      }))
+    );
+    if (!stockCheck.available) {
+      return NextResponse.json(
+        { error: 'Some items are out of stock', insufficientItems: stockCheck.insufficientItems },
+        { status: 409 }
+      );
     }
 
     // Generate order number
@@ -37,12 +53,11 @@ export async function POST(req: NextRequest) {
         },
       });
     } catch (dbError) {
-      // DB not configured yet — proceed with mock order so the demo works
       console.warn('[checkout] DB unavailable, mocking order:', dbError);
       order = { id: 'mock', orderNumber };
     }
 
-    // Create Stripe checkout session
+    // Create Stripe checkout session — payment confirmation handled by the webhook
     if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY !== 'sk_test_dummy') {
       const session = await stripe.checkout.sessions.create({
         mode: 'payment',
@@ -64,15 +79,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ url: session.url, orderNumber });
     }
 
-    // Send WhatsApp confirmation (non-blocking)
-    if (customer.phone) {
-      sendWhatsAppMessage(
-        customer.phone,
-        `🛠️ Naguabo Commercial — Order ${orderNumber} confirmed! Total: $${totals.total.toFixed(2)}. We'll notify you when it ships.`
-      ).catch(() => {});
-    }
+    // Demo fallback (no Stripe configured) — emit order.paid so the observer sends WhatsApp
+    await eventBus.emit('order.paid', {
+      orderNumber,
+      customerPhone: customer.phone,
+      customerName: customer.name,
+      items: items.map((it: { name: string; quantity: number; price: number }) => ({
+        name: it.name,
+        quantity: it.quantity,
+        price: it.price,
+      })),
+      subtotal: totals.subtotal,
+      tax: totals.tax,
+      total: totals.total,
+      paymentType: 'CARD',
+    });
 
-    // Demo fallback: pretend payment succeeded
     return NextResponse.json({ orderNumber, mock: true });
   } catch (e) {
     console.error('[checkout]', e);
