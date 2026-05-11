@@ -53,9 +53,9 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
       <div className="p-3 flex flex-col flex-1">
         {product.brand && (
-          <div className="text-xs text-gray-500 font-semibold uppercase">{product.brand}</div>
+          <div className="text-xs text-gray-500 dark:text-slate-400 font-semibold uppercase">{product.brand}</div>
         )}
-        <h3 className="font-medium text-sm text-gray-900 line-clamp-2 mt-1 flex-1">
+        <h3 className="font-medium text-sm text-gray-900 dark:text-slate-100 line-clamp-2 mt-1 flex-1">
           {product.name}
         </h3>
         <div className="flex items-center gap-1 mt-1">
@@ -66,19 +66,19 @@ export default function ProductCard({ product }: { product: Product }) {
                 className={`w-3.5 h-3.5 ${
                   s <= Math.round(product.rating)
                     ? 'fill-yellow-400 text-yellow-400'
-                    : 'text-gray-300'
+                    : 'text-gray-300 dark:text-slate-600'
                 }`}
               />
             ))}
           </div>
-          <span className="text-xs text-gray-500">({product.reviewCount})</span>
+          <span className="text-xs text-gray-500 dark:text-slate-400">({product.reviewCount})</span>
         </div>
         <div className="flex items-baseline gap-2 mt-2">
-          <span className="text-xl font-black text-gray-900">
+          <span className="text-xl font-black text-gray-900 dark:text-slate-100">
             ${product.price.toFixed(2)}
           </span>
           {product.comparePrice && (
-            <span className="text-sm text-gray-500 line-through">
+            <span className="text-sm text-gray-400 dark:text-slate-500 line-through">
               ${product.comparePrice.toFixed(2)}
             </span>
           )}
