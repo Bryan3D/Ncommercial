@@ -44,27 +44,27 @@ export default function HomePage() {
       </section>
 
       {/* Trust badges */}
-      <section className="bg-white border-b">
+      <section className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div className="flex flex-col items-center gap-1">
             <Truck className="w-6 h-6 text-brand" />
-            <div className="font-semibold text-sm">Free pickup</div>
-            <div className="text-xs text-gray-500">In-store ready in 1hr</div>
+            <div className="font-semibold text-sm text-gray-900 dark:text-slate-100">Free pickup</div>
+            <div className="text-xs text-gray-500 dark:text-slate-400">In-store ready in 1hr</div>
           </div>
           <div className="flex flex-col items-center gap-1">
             <Headphones className="w-6 h-6 text-brand" />
-            <div className="font-semibold text-sm">24/7 chat support</div>
-            <div className="text-xs text-gray-500">Always here to help</div>
+            <div className="font-semibold text-sm text-gray-900 dark:text-slate-100">24/7 chat support</div>
+            <div className="text-xs text-gray-500 dark:text-slate-400">Always here to help</div>
           </div>
           <div className="flex flex-col items-center gap-1">
             <ShieldCheck className="w-6 h-6 text-brand" />
-            <div className="font-semibold text-sm">Secure checkout</div>
-            <div className="text-xs text-gray-500">Stripe-powered payments</div>
+            <div className="font-semibold text-sm text-gray-900 dark:text-slate-100">Secure checkout</div>
+            <div className="text-xs text-gray-500 dark:text-slate-400">Stripe-powered payments</div>
           </div>
           <div className="flex flex-col items-center gap-1">
             <Zap className="w-6 h-6 text-brand" />
-            <div className="font-semibold text-sm">Fast delivery</div>
-            <div className="text-xs text-gray-500">Across Puerto Rico</div>
+            <div className="font-semibold text-sm text-gray-900 dark:text-slate-100">Fast delivery</div>
+            <div className="text-xs text-gray-500 dark:text-slate-400">Across Puerto Rico</div>
           </div>
         </div>
       </section>
