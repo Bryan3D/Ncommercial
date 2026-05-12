@@ -140,6 +140,9 @@ export default function Header() {
           <Link href="/store?category=paint" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
             Paint
           </Link>
+          <Link href="/store?category=roof-sealing" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
+            🏠 Roof Sealing
+          </Link>
           <Link href="/store?category=garden" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
             Garden
           </Link>

@@ -35,12 +35,12 @@ export default function Footer() {
         <div>
           <h3 className="text-white font-bold mb-3">Get in Touch</h3>
           <ul className="space-y-2 text-sm">
-            <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-0.5 shrink-0" /> Carr. 31, Naguabo, PR 00718</li>
-            <li className="flex items-center gap-2"><Phone className="w-4 h-4" /> (787) 555-1234</li>
+            <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-0.5 shrink-0" /> 20 Calle Venecia Naguabo, Puerto Rico, 00718</li>
+            <li className="flex items-center gap-2"><Phone className="w-4 h-4" /> (787)874-2120</li>
             <li className="flex items-center gap-2"><Mail className="w-4 h-4" /> info@naguabo-commercial.com</li>
           </ul>
           <div className="flex gap-3 mt-4">
-            <a href="#" aria-label="Facebook" className="hover:text-white"><Facebook className="w-5 h-5" /></a>
+            <a href="https://www.facebook.com/naguabocommercial718" aria-label="Facebook" className="hover:text-white"><Facebook className="w-5 h-5" /></a>
             <a href="#" aria-label="Instagram" className="hover:text-white"><Instagram className="w-5 h-5" /></a>
           </div>
         </div>
