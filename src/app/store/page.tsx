@@ -4,15 +4,31 @@ import { useMemo, useState, Suspense } from 'react';
 import ProductCard from '@/components/ProductCard';
 import { mockProducts, mockCategories } from '@/lib/mock-data';
 import { SlidersHorizontal } from 'lucide-react';
+import { useLanguage } from '@/components/LanguageProvider';
 
 function StoreContent() {
   const params = useSearchParams();
   const categorySlug = params.get('category') || '';
   const search = params.get('q')?.toLowerCase() || '';
   const dealsOnly = params.get('deals') === '1';
+  const { t, tCat } = useLanguage();
 
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'rating'>('featured');
   const [maxPrice, setMaxPrice] = useState<number>(500);
+
+  const topLevelCategories = useMemo(
+    () => mockCategories.filter((c) => !c.parentSlug),
+    []
+  );
+
+  const buildingSubCategories = useMemo(
+    () => mockCategories.filter((c) => c.parentSlug === 'building-materials'),
+    []
+  );
+
+  const currentCategory = mockCategories.find((c) => c.slug === categorySlug);
+  const isBuildingSection =
+    categorySlug === 'building-materials' || currentCategory?.parentSlug === 'building-materials';
 
   const categoryId = useMemo(
     () => mockCategories.find((c) => c.slug === categorySlug)?.id,
@@ -21,7 +37,14 @@ function StoreContent() {
 
   const filtered = useMemo(() => {
     let list = [...mockProducts];
-    if (categoryId) list = list.filter((p) => p.categoryId === categoryId);
+
+    if (categorySlug === 'building-materials') {
+      const subIds = new Set(buildingSubCategories.map((c) => c.id));
+      list = list.filter((p) => subIds.has(p.categoryId));
+    } else if (categoryId) {
+      list = list.filter((p) => p.categoryId === categoryId);
+    }
+
     if (search) {
       list = list.filter(
         (p) =>
@@ -40,18 +63,33 @@ function StoreContent() {
       default: list.sort((a, b) => Number(b.featured) - Number(a.featured));
     }
     return list;
-  }, [categoryId, search, dealsOnly, sortBy, maxPrice]);
+  }, [categoryId, categorySlug, buildingSubCategories, search, dealsOnly, sortBy, maxPrice]);
 
-  const currentCategory = mockCategories.find((c) => c.slug === categorySlug);
+  const parentCategory = currentCategory?.parentSlug
+    ? mockCategories.find((c) => c.slug === currentCategory.parentSlug)
+    : null;
+
+  const pageTitle = categorySlug === 'building-materials'
+    ? tCat('building-materials')
+    : currentCategory
+      ? tCat(currentCategory.slug)
+      : search
+        ? `${t('store.resultsFor')} "${search}"`
+        : dealsOnly
+          ? t('store.todaysDeals')
+          : t('store.allProducts');
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Breadcrumb */}
       <nav className="text-sm text-gray-500 dark:text-slate-400 mb-4">
-        <a href="/" className="hover:text-brand">Home</a> /{' '}
-        <a href="/store" className="hover:text-brand">Store</a>
+        <a href="/" className="hover:text-brand">{t('breadcrumb.home')}</a> /{' '}
+        <a href="/store" className="hover:text-brand">{t('breadcrumb.store')}</a>
+        {parentCategory && (
+          <> / <a href={`/store?category=${parentCategory.slug}`} className="hover:text-brand">{tCat(parentCategory.slug)}</a></>
+        )}
         {currentCategory && (
-          <> / <span className="text-gray-700 dark:text-slate-300">{currentCategory.name}</span></>
+          <> / <span className="text-gray-700 dark:text-slate-300">{tCat(currentCategory.slug)}</span></>
         )}
       </nav>
 
@@ -60,23 +98,27 @@ function StoreContent() {
         <aside className="md:w-60 shrink-0">
           <div className="card p-4 mb-4">
             <h3 className="font-bold mb-3 flex items-center gap-2 text-gray-900 dark:text-slate-100">
-              <SlidersHorizontal className="w-4 h-4" /> Filters
+              <SlidersHorizontal className="w-4 h-4" /> {t('store.filters')}
             </h3>
             <div className="mb-4">
-              <h4 className="font-semibold text-sm mb-2 text-gray-700 dark:text-slate-300">Department</h4>
+              <h4 className="font-semibold text-sm mb-2 text-gray-700 dark:text-slate-300">{t('store.department')}</h4>
               <ul className="space-y-1 text-sm">
                 <li>
                   <a href="/store" className={`block py-1 ${!categorySlug ? 'text-brand font-bold' : 'text-gray-600 dark:text-slate-400 hover:text-brand dark:hover:text-brand'}`}>
-                    All Products
+                    {t('store.allProducts')}
                   </a>
                 </li>
-                {mockCategories.map((c) => (
+                {topLevelCategories.map((c) => (
                   <li key={c.id}>
                     <a
                       href={`/store?category=${c.slug}`}
-                      className={`block py-1 ${categorySlug === c.slug ? 'text-brand font-bold' : 'text-gray-600 dark:text-slate-400 hover:text-brand dark:hover:text-brand'}`}
+                      className={`block py-1 ${
+                        categorySlug === c.slug || (isBuildingSection && c.slug === 'building-materials')
+                          ? 'text-brand font-bold'
+                          : 'text-gray-600 dark:text-slate-400 hover:text-brand dark:hover:text-brand'
+                      }`}
                     >
-                      {c.icon} {c.name}
+                      {c.icon} {tCat(c.slug)}
                     </a>
                   </li>
                 ))}
@@ -84,7 +126,7 @@ function StoreContent() {
             </div>
             <div>
               <h4 className="font-semibold text-sm mb-2 text-gray-700 dark:text-slate-300">
-                Max price: ${maxPrice}
+                {t('store.maxPrice')}: ${maxPrice}
               </h4>
               <input
                 type="range"
@@ -94,36 +136,67 @@ function StoreContent() {
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
                 className="w-full accent-brand"
+                aria-label={t('store.maxPrice')}
               />
             </div>
           </div>
         </aside>
 
         {/* Results */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">
-              {currentCategory?.name || (search ? `Results for "${search}"` : dealsOnly ? "Today's Deals" : 'All Products')}
+              {pageTitle}
               <span className="text-gray-500 dark:text-slate-400 font-normal text-base ml-2">
-                ({filtered.length} items)
+                ({filtered.length} {t('store.items')})
               </span>
             </h1>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'featured' | 'price-asc' | 'price-desc' | 'rating')}
+              aria-label={t('store.filters')}
               className="border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm
                          bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
             >
-              <option value="featured">Featured</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-              <option value="rating">Top Rated</option>
+              <option value="featured">{t('store.sortFeatured')}</option>
+              <option value="price-asc">{t('store.sortPriceAsc')}</option>
+              <option value="price-desc">{t('store.sortPriceDesc')}</option>
+              <option value="rating">{t('store.sortRating')}</option>
             </select>
           </div>
 
+          {/* Building Materials sub-tabs */}
+          {isBuildingSection && (
+            <div className="flex gap-1.5 overflow-x-auto pb-1 mb-5 border-b border-gray-200 dark:border-slate-700">
+              <a
+                href="/store?category=building-materials"
+                className={`shrink-0 px-3 py-1.5 rounded-t text-sm font-medium transition-colors ${
+                  categorySlug === 'building-materials'
+                    ? 'bg-brand text-white'
+                    : 'text-gray-600 dark:text-slate-400 hover:text-brand dark:hover:text-brand'
+                }`}
+              >
+                {t('store.subtabAll')}
+              </a>
+              {buildingSubCategories.map((sub) => (
+                <a
+                  key={sub.id}
+                  href={`/store?category=${sub.slug}`}
+                  className={`shrink-0 px-3 py-1.5 rounded-t text-sm font-medium transition-colors whitespace-nowrap ${
+                    categorySlug === sub.slug
+                      ? 'bg-brand text-white'
+                      : 'text-gray-600 dark:text-slate-400 hover:text-brand dark:hover:text-brand'
+                  }`}
+                >
+                  {sub.icon} {tCat(sub.slug)}
+                </a>
+              ))}
+            </div>
+          )}
+
           {filtered.length === 0 ? (
             <div className="card p-12 text-center text-gray-500 dark:text-slate-400">
-              No products match your filters. Try adjusting them.
+              {t('store.empty')}
             </div>
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

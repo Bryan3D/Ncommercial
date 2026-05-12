@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import { ThemeProvider, themeScript } from "@/components/ThemeProvider";
+import { LanguageProvider } from "@/components/LanguageProvider";
 
 export const metadata: Metadata = {
   title: "Naguabo Commercial — Tu Ferretería de Confianza",
@@ -27,11 +28,13 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-gray-50 dark:bg-slate-900 transition-colors duration-200">
         <ThemeProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <ChatWidget />
-          <WhatsAppFloat />
+          <LanguageProvider>
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <ChatWidget />
+            <WhatsAppFloat />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

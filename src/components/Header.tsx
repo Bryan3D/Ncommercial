@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ShoppingCart, User, Search, MapPin, Phone, Sun, Moon } from "lucide-react";
 import { useCart } from "@/lib/cart-store";
 import { useTheme } from "@/components/ThemeProvider";
+import { useLanguage } from "@/components/LanguageProvider";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import logo from "@/assets/nc_logo.jpg";
@@ -10,6 +11,7 @@ import logo from "@/assets/nc_logo.jpg";
 export default function Header() {
   const itemCount = useCart((s) => s.getItemCount());
   const { theme, toggle } = useTheme();
+  const { lang, toggle: toggleLang, t } = useLanguage();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -32,7 +34,7 @@ export default function Header() {
               <span className="hidden sm:inline">(787) 874-2120</span>
             </a>
             <span className="hidden md:inline">
-              Open 24/7 Online · Free Pickup
+              {mounted ? t('header.openHours') : 'Open 24/7 Online · Free Pickup'}
             </span>
           </div>
         </div>
@@ -60,7 +62,7 @@ export default function Header() {
             <input
               type="search"
               name="q"
-              placeholder="What can we help you find?"
+              placeholder={mounted ? t('header.search.placeholder') : 'What can we help you find?'}
               className="w-full border-2 border-brand rounded-md py-2 pl-4 pr-12
                          bg-white dark:bg-slate-800
                          text-gray-900 dark:text-slate-100
@@ -77,13 +79,13 @@ export default function Header() {
           </div>
         </form>
 
-        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <Link
             href="/account"
             className="flex items-center gap-1 text-sm text-gray-700 dark:text-slate-300 hover:text-brand dark:hover:text-brand"
           >
             <User className="w-5 h-5" />
-            <span className="hidden md:inline">Account</span>
+            <span className="hidden md:inline">{mounted ? t('header.account') : 'Account'}</span>
           </Link>
 
           <Link
@@ -96,8 +98,24 @@ export default function Header() {
                 {itemCount}
               </span>
             )}
-            <span className="hidden md:inline">Cart</span>
+            <span className="hidden md:inline">{mounted ? t('header.cart') : 'Cart'}</span>
           </Link>
+
+          {/* Language toggle */}
+          {mounted && (
+            <button
+              type="button"
+              onClick={toggleLang}
+              aria-label={lang === 'en' ? 'Cambiar a español' : 'Switch to English'}
+              className="px-2.5 py-1 rounded text-xs font-bold tracking-wider
+                         border border-gray-400 dark:border-slate-500
+                         text-gray-600 dark:text-slate-300
+                         hover:border-brand hover:text-brand dark:hover:text-brand
+                         transition-colors duration-200"
+            >
+              {lang === 'en' ? 'ES' : 'EN'}
+            </button>
+          )}
 
           {/* Dark / Light toggle */}
           {mounted && (
@@ -123,31 +141,31 @@ export default function Header() {
       <nav className="bg-gray-100 dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 flex gap-6 overflow-x-auto py-2 text-sm font-medium">
           <Link href="/store" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
-            All Products
+            {mounted ? t('nav.allProducts') : 'All Products'}
           </Link>
           <Link href="/store?category=tools" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
-            Tools
+            {mounted ? t('nav.tools') : 'Tools'}
           </Link>
           <Link href="/store?category=building-materials" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
-            Building
+            {mounted ? t('nav.building') : 'Building'}
           </Link>
           <Link href="/store?category=plumbing" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
-            Plumbing
+            {mounted ? t('nav.plumbing') : 'Plumbing'}
           </Link>
           <Link href="/store?category=electrical" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
-            Electrical
+            {mounted ? t('nav.electrical') : 'Electrical'}
           </Link>
           <Link href="/store?category=paint" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
-            Paint
+            {mounted ? t('nav.paint') : 'Paint'}
           </Link>
           <Link href="/store?category=roof-sealing" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
-            🏠 Roof Sealing
+            {mounted ? t('nav.roofSealing') : '🏠 Roof Sealing'}
           </Link>
           <Link href="/store?category=garden" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
-            Garden
+            {mounted ? t('nav.garden') : 'Garden'}
           </Link>
           <Link href="/store?category=lighting" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
-            Lighting
+            {mounted ? t('nav.lighting') : 'Lighting'}
           </Link>
           <Link href="/admin" className="ml-auto text-accent whitespace-nowrap font-semibold">
             Admin

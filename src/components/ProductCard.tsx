@@ -3,9 +3,11 @@ import Link from 'next/link';
 import { Star, ShoppingCart } from 'lucide-react';
 import type { Product } from '@/types';
 import { useCart } from '@/lib/cart-store';
+import { useLanguage } from '@/components/LanguageProvider';
 
 export default function ProductCard({ product }: { product: Product }) {
   const addItem = useCart((s) => s.addItem);
+  const { t } = useLanguage();
   const discount = product.comparePrice
     ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
     : 0;
@@ -42,12 +44,12 @@ export default function ProductCard({ product }: { product: Product }) {
         )}
         {product.stock < 10 && product.stock > 0 && (
           <span className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
-            Low stock
+            {t('product.lowStock')}
           </span>
         )}
         {product.stock === 0 && (
           <span className="absolute top-2 right-2 bg-gray-700 text-white text-xs font-bold px-2 py-1 rounded">
-            Out of stock
+            {t('product.outOfStock')}
           </span>
         )}
       </div>
@@ -95,7 +97,7 @@ export default function ProductCard({ product }: { product: Product }) {
           className="mt-3 btn-primary w-full text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ShoppingCart className="w-4 h-4" />
-          Add to cart
+          {t('product.addToCart')}
         </button>
       </div>
     </Link>

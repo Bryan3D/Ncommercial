@@ -22,6 +22,7 @@ export interface Category {
   name: string;
   slug: string;
   icon?: string | null;
+  parentSlug?: string | null;
 }
 
 export interface CartItem {
