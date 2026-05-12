@@ -10,18 +10,17 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: 'light',
+  theme: 'dark',
   toggle: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setTheme] = useState<Theme>('dark');
 
-  // Read saved preference (or system preference) once mounted
+  // Read saved preference, default to dark if none stored
   useEffect(() => {
     const saved = localStorage.getItem('theme') as Theme | null;
-    const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    setTheme(saved ?? system);
+    setTheme(saved ?? 'dark');
   }, []);
 
   // Apply / remove the `dark` class whenever theme changes
@@ -45,4 +44,4 @@ export const useTheme = () => useContext(ThemeContext);
  * Inline script injected into <head> before hydration to prevent the white
  * flash when a user returns with a saved "dark" preference.
  */
-export const themeScript = `(function(){try{var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t==='dark')document.documentElement.classList.add('dark')}catch(e){}})()`;
+export const themeScript = `(function(){try{var t=localStorage.getItem('theme')||'dark';if(t==='dark')document.documentElement.classList.add('dark')}catch(e){document.documentElement.classList.add('dark')}})()`;

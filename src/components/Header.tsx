@@ -25,11 +25,11 @@ export default function Header() {
           </div>
           <div className="flex items-center gap-4">
             <a
-              href="tel:+17875551234"
+              href="tel:+(787)874-2120"
               className="flex items-center gap-1 hover:underline"
             >
               <Phone className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">(787) 555-1234</span>
+              <span className="hidden sm:inline">(787) 874-2120</span>
             </a>
             <span className="hidden md:inline">
               Open 24/7 Online · Free Pickup

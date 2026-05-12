@@ -72,8 +72,8 @@ export default function ProductPage() {
             </div>
           )}
           <h1 className="text-3xl font-bold mt-1 text-gray-900 dark:text-slate-100">{product.name}</h1>
-          <div className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-            SKU: {product.sku} · UPC: {product.barcode}
+          <div className="text-sm text-gray-500 dark:text-slate-400 mt-1 font-mono tracking-wide">
+            #: {product.sku} · UPC: {product.barcode}
           </div>
 
           {/* Rating */}

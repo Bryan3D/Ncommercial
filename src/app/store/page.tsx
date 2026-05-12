@@ -47,11 +47,11 @@ function StoreContent() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Breadcrumb */}
-      <nav className="text-sm text-gray-500 mb-4">
+      <nav className="text-sm text-gray-500 dark:text-slate-400 mb-4">
         <a href="/" className="hover:text-brand">Home</a> /{' '}
         <a href="/store" className="hover:text-brand">Store</a>
         {currentCategory && (
-          <> / <span className="text-gray-700">{currentCategory.name}</span></>
+          <> / <span className="text-gray-700 dark:text-slate-300">{currentCategory.name}</span></>
         )}
       </nav>
 
@@ -59,14 +59,14 @@ function StoreContent() {
         {/* Sidebar filters */}
         <aside className="md:w-60 shrink-0">
           <div className="card p-4 mb-4">
-            <h3 className="font-bold mb-3 flex items-center gap-2">
+            <h3 className="font-bold mb-3 flex items-center gap-2 text-gray-900 dark:text-slate-100">
               <SlidersHorizontal className="w-4 h-4" /> Filters
             </h3>
             <div className="mb-4">
-              <h4 className="font-semibold text-sm mb-2">Department</h4>
+              <h4 className="font-semibold text-sm mb-2 text-gray-700 dark:text-slate-300">Department</h4>
               <ul className="space-y-1 text-sm">
                 <li>
-                  <a href="/store" className={`block py-1 ${!categorySlug ? 'text-brand font-bold' : 'hover:text-brand'}`}>
+                  <a href="/store" className={`block py-1 ${!categorySlug ? 'text-brand font-bold' : 'text-gray-600 dark:text-slate-400 hover:text-brand dark:hover:text-brand'}`}>
                     All Products
                   </a>
                 </li>
@@ -74,7 +74,7 @@ function StoreContent() {
                   <li key={c.id}>
                     <a
                       href={`/store?category=${c.slug}`}
-                      className={`block py-1 ${categorySlug === c.slug ? 'text-brand font-bold' : 'hover:text-brand'}`}
+                      className={`block py-1 ${categorySlug === c.slug ? 'text-brand font-bold' : 'text-gray-600 dark:text-slate-400 hover:text-brand dark:hover:text-brand'}`}
                     >
                       {c.icon} {c.name}
                     </a>
@@ -83,7 +83,7 @@ function StoreContent() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-sm mb-2">
+              <h4 className="font-semibold text-sm mb-2 text-gray-700 dark:text-slate-300">
                 Max price: ${maxPrice}
               </h4>
               <input
@@ -102,16 +102,17 @@ function StoreContent() {
         {/* Results */}
         <div className="flex-1">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">
               {currentCategory?.name || (search ? `Results for "${search}"` : dealsOnly ? "Today's Deals" : 'All Products')}
-              <span className="text-gray-500 font-normal text-base ml-2">
+              <span className="text-gray-500 dark:text-slate-400 font-normal text-base ml-2">
                 ({filtered.length} items)
               </span>
             </h1>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'featured' | 'price-asc' | 'price-desc' | 'rating')}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+              className="border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm
+                         bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
             >
               <option value="featured">Featured</option>
               <option value="price-asc">Price: Low to High</option>
@@ -121,7 +122,7 @@ function StoreContent() {
           </div>
 
           {filtered.length === 0 ? (
-            <div className="card p-12 text-center text-gray-500">
+            <div className="card p-12 text-center text-gray-500 dark:text-slate-400">
               No products match your filters. Try adjusting them.
             </div>
           ) : (

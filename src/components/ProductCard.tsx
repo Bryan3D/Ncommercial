@@ -58,6 +58,11 @@ export default function ProductCard({ product }: { product: Product }) {
         <h3 className="font-medium text-sm text-gray-900 dark:text-slate-100 line-clamp-2 mt-1 flex-1">
           {product.name}
         </h3>
+        {product.sku && (
+          <div className="text-xs text-gray-400 dark:text-slate-500 mt-0.5 font-mono tracking-wide">
+            #: {product.sku}
+          </div>
+        )}
         <div className="flex items-center gap-1 mt-1">
           <div className="flex">
             {[1, 2, 3, 4, 5].map((s) => (
@@ -84,6 +89,7 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
         </div>
         <button
+          type="button"
           onClick={handleAdd}
           disabled={product.stock === 0}
           className="mt-3 btn-primary w-full text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"

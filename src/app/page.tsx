@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { Truck, ShieldCheck, Headphones, Zap, ChevronRight, Tag } from 'lucide-react';
+import { Truck, ShieldCheck, Headphones, Zap, ChevronRight, Tag, Info } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
+import AdBanner from '@/components/AdBanner';
 import { mockProducts, mockCategories } from '@/lib/mock-data';
 
 export default function HomePage() {
@@ -43,6 +44,16 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Disclaimer */}
+      <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800">
+        <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-center gap-2 text-sm text-amber-800 dark:text-amber-300">
+          <Info className="w-4 h-4 shrink-0" />
+          <span>
+            If an item is currently out of stock, please allow <strong>24 to 48 hours</strong> for delivery or pickup.
+          </span>
+        </div>
+      </div>
+
       {/* Trust badges */}
       <section className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
@@ -68,6 +79,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Ad / Sponsor / News banner */}
+      <AdBanner />
 
       {/* Categories */}
       <section className="max-w-7xl mx-auto px-4 py-10">
