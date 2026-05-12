@@ -57,6 +57,15 @@ const slides: Slide[] = [
     image: '/NMD_Aluminum_n.jpg',
   },
   {
+    id: 7,
+    label: 'SPONSOR',
+    headline: "Deli's Delicias — Naguabo's Hidden Gem",
+    sub: 'Deliciosa comida casera y más. Síguenos en Facebook para ver nuestras ofertas y menú del día.',
+    bg: 'from-rose-600 to-rose-900',
+    cta: { text: 'Visit on Facebook', href: 'https://www.facebook.com/deliannise.rodriguez' },
+    image: '/DelisDelicias_n.jpg',
+  },
+  {
     id: 6,
     label: 'PROMO',
     headline: 'Your Ad Could Be Here',
