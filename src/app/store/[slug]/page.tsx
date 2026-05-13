@@ -60,8 +60,10 @@ export default function ProductPage() {
       <div className="grid md:grid-cols-2 gap-8">
         {/* Image */}
         <div className="card p-4">
+          <div className="!bg-white rounded overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={product.imageUrl} alt={product.name} className="w-full aspect-square object-cover rounded" />
+          <img src={product.imageUrl} alt={product.name} className="w-full aspect-square object-contain" />
+          </div>
         </div>
 
         {/* Details */}

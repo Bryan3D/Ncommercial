@@ -30,12 +30,12 @@ export default function ProductCard({ product }: { product: Product }) {
       href={`/store/${product.slug}`}
       className="card group flex flex-col overflow-hidden"
     >
-      <div className="relative aspect-square bg-gray-100 overflow-hidden">
+      <div className="relative aspect-square bg-white overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={product.imageUrl}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+          className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform"
         />
         {discount > 0 && (
           <span className="absolute top-2 left-2 bg-brand text-white text-xs font-bold px-2 py-1 rounded">

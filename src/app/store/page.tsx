@@ -21,14 +21,54 @@ function StoreContent() {
     []
   );
 
-  const buildingSubCategories = useMemo(
-    () => mockCategories.filter((c) => c.parentSlug === 'building-materials'),
-    []
+  const currentCategory = useMemo(
+    () => mockCategories.find((c) => c.slug === categorySlug),
+    [categorySlug]
   );
 
-  const currentCategory = mockCategories.find((c) => c.slug === categorySlug);
-  const isBuildingSection =
-    categorySlug === 'building-materials' || currentCategory?.parentSlug === 'building-materials';
+  // Recursively collect all descendant category IDs for a given slug
+  const getDescendantIds = (slug: string): string[] => {
+    const direct = mockCategories.filter((c) => c.parentSlug === slug);
+    return [...direct.map((c) => c.id), ...direct.flatMap((c) => getDescendantIds(c.slug))];
+  };
+
+  // The section whose sub-tabs to show: the category itself if it has children,
+  // otherwise its parent (so a child page still shows the parent's sub-tabs).
+  const currentSection = useMemo(() => {
+    if (!categorySlug) return null;
+    const cat = mockCategories.find((c) => c.slug === categorySlug);
+    if (!cat) return null;
+    const hasChildren = mockCategories.some((c) => c.parentSlug === cat.slug);
+    if (hasChildren) return cat;
+    if (cat.parentSlug) return mockCategories.find((c) => c.slug === cat.parentSlug) ?? null;
+    return null;
+  }, [categorySlug]);
+
+  const sectionSubCategories = useMemo(
+    () => (currentSection ? mockCategories.filter((c) => c.parentSlug === currentSection.slug) : []),
+    [currentSection]
+  );
+
+  // Walk up to find the top-level (no parentSlug) ancestor for sidebar highlighting
+  const topLevelAncestor = useMemo(() => {
+    if (!categorySlug) return null;
+    let cat = mockCategories.find((c) => c.slug === categorySlug);
+    while (cat?.parentSlug) cat = mockCategories.find((c) => c.slug === cat!.parentSlug);
+    return cat ?? null;
+  }, [categorySlug]);
+
+  // Build ordered list of ancestor categories for breadcrumb
+  const ancestorPath = useMemo(() => {
+    const path: Array<{ id: string; slug: string; name: string }> = [];
+    let cat = currentCategory?.parentSlug
+      ? mockCategories.find((c) => c.slug === currentCategory?.parentSlug)
+      : undefined;
+    while (cat) {
+      path.unshift(cat);
+      cat = cat.parentSlug ? mockCategories.find((c) => c.slug === cat!.parentSlug) : undefined;
+    }
+    return path;
+  }, [currentCategory]);
 
   const categoryId = useMemo(
     () => mockCategories.find((c) => c.slug === categorySlug)?.id,
@@ -38,9 +78,10 @@ function StoreContent() {
   const filtered = useMemo(() => {
     let list = [...mockProducts];
 
-    if (categorySlug === 'building-materials') {
-      const subIds = new Set(buildingSubCategories.map((c) => c.id));
-      list = list.filter((p) => subIds.has(p.categoryId));
+    if (currentSection && categorySlug === currentSection.slug) {
+      // "All" tab for this section — include products from all descendants
+      const allIds = new Set(getDescendantIds(currentSection.slug));
+      list = list.filter((p) => allIds.has(p.categoryId));
     } else if (categoryId) {
       list = list.filter((p) => p.categoryId === categoryId);
     }
@@ -63,14 +104,10 @@ function StoreContent() {
       default: list.sort((a, b) => Number(b.featured) - Number(a.featured));
     }
     return list;
-  }, [categoryId, categorySlug, buildingSubCategories, search, dealsOnly, sortBy, maxPrice]);
+  }, [categoryId, categorySlug, currentSection, search, dealsOnly, sortBy, maxPrice]);
 
-  const parentCategory = currentCategory?.parentSlug
-    ? mockCategories.find((c) => c.slug === currentCategory.parentSlug)
-    : null;
-
-  const pageTitle = categorySlug === 'building-materials'
-    ? tCat('building-materials')
+  const pageTitle = currentSection && categorySlug === currentSection.slug
+    ? tCat(currentSection.slug)
     : currentCategory
       ? tCat(currentCategory.slug)
       : search
@@ -85,9 +122,9 @@ function StoreContent() {
       <nav className="text-sm text-gray-500 dark:text-slate-400 mb-4">
         <a href="/" className="hover:text-brand">{t('breadcrumb.home')}</a> /{' '}
         <a href="/store" className="hover:text-brand">{t('breadcrumb.store')}</a>
-        {parentCategory && (
-          <> / <a href={`/store?category=${parentCategory.slug}`} className="hover:text-brand">{tCat(parentCategory.slug)}</a></>
-        )}
+        {ancestorPath.map((ancestor) => (
+          <span key={ancestor.id}> / <a href={`/store?category=${ancestor.slug}`} className="hover:text-brand">{tCat(ancestor.slug)}</a></span>
+        ))}
         {currentCategory && (
           <> / <span className="text-gray-700 dark:text-slate-300">{tCat(currentCategory.slug)}</span></>
         )}
@@ -113,7 +150,7 @@ function StoreContent() {
                     <a
                       href={`/store?category=${c.slug}`}
                       className={`block py-1 ${
-                        categorySlug === c.slug || (isBuildingSection && c.slug === 'building-materials')
+                        categorySlug === c.slug || topLevelAncestor?.slug === c.slug
                           ? 'text-brand font-bold'
                           : 'text-gray-600 dark:text-slate-400 hover:text-brand dark:hover:text-brand'
                       }`}
@@ -165,20 +202,20 @@ function StoreContent() {
             </select>
           </div>
 
-          {/* Building Materials sub-tabs */}
-          {isBuildingSection && (
+          {/* Sub-category tabs (any section with sub-categories) */}
+          {currentSection && sectionSubCategories.length > 0 && (
             <div className="flex gap-1.5 overflow-x-auto pb-1 mb-5 border-b border-gray-200 dark:border-slate-700">
               <a
-                href="/store?category=building-materials"
+                href={`/store?category=${currentSection.slug}`}
                 className={`shrink-0 px-3 py-1.5 rounded-t text-sm font-medium transition-colors ${
-                  categorySlug === 'building-materials'
+                  categorySlug === currentSection.slug
                     ? 'bg-brand text-white'
                     : 'text-gray-600 dark:text-slate-400 hover:text-brand dark:hover:text-brand'
                 }`}
               >
                 {t('store.subtabAll')}
               </a>
-              {buildingSubCategories.map((sub) => (
+              {sectionSubCategories.map((sub) => (
                 <a
                   key={sub.id}
                   href={`/store?category=${sub.slug}`}

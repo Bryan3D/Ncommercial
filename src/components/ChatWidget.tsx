@@ -58,7 +58,7 @@ export default function ChatWidget() {
         <button
           onClick={() => setOpen(true)}
           aria-label="Open chat"
-          className="fixed bottom-6 right-6 z-50 bg-accent text-white p-4 rounded-full shadow-lg hover:bg-accent-dark transition-all hover:scale-110"
+          className="fixed bottom-6 right-6 z-50 bg-brand text-white p-4 rounded-full shadow-lg hover:bg-brand-dark transition-all hover:scale-110"
         >
           <MessageCircle className="w-6 h-6" />
         </button>
@@ -67,7 +67,7 @@ export default function ChatWidget() {
       {open && (
         <div className="fixed bottom-6 right-6 z-50 w-[calc(100vw-3rem)] sm:w-96 h-[32rem] bg-white rounded-lg shadow-2xl flex flex-col border border-gray-200">
           {/* Header */}
-          <div className="bg-accent text-white p-4 rounded-t-lg flex items-center justify-between">
+          <div className="bg-brand text-white p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="bg-white/20 p-1.5 rounded-full">
                 <Bot className="w-5 h-5" />
@@ -123,12 +123,16 @@ export default function ChatWidget() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && send()}
               placeholder="Type your question..."
-              className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              className="flex-1 border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm
+                         bg-white dark:bg-slate-700
+                         text-gray-900 dark:text-slate-100
+                         placeholder:text-gray-400 dark:placeholder:text-slate-400
+                         focus:outline-none focus:ring-2 focus:ring-brand"
             />
             <button
               onClick={send}
               disabled={loading || !input.trim()}
-              className="bg-accent text-white px-3 rounded-md hover:bg-accent-dark disabled:opacity-50"
+              className="bg-brand text-white px-3 rounded-md hover:bg-brand-dark disabled:opacity-50"
               aria-label="Send"
             >
               <Send className="w-5 h-5" />

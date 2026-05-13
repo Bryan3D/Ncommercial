@@ -113,6 +113,7 @@ export const categoryNames: Record<string, { en: string; es: string }> = {
   'building-concrete-treatment':{ en: 'Concrete Treatment',     es: 'Tratamiento de Concreto' },
   'building-tile-tools':        { en: 'Tile Tools',             es: 'Herramientas para Azulejos' },
   'building-paints':            { en: 'Construction Paints',    es: 'Pinturas de Construcción' },
+  'tools-hand-tools':           { en: 'Hand Tools',             es: 'Herramientas de Mano' },
 };
 
 export function tCat(slug: string, lang: Lang): string {

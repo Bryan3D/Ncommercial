@@ -39,7 +39,7 @@ export default function Footer() {
         <div>
           <h3 className="text-white font-bold mb-3">{t('footer.getInTouch')}</h3>
           <ul className="space-y-2 text-sm">
-            <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-0.5 shrink-0" /> 20 Calle Venecia Naguabo, Puerto Rico, 00718</li>
+            <li className="flex items-center gap-2"><MapPin className="w-4 h-4 shrink-0" /><a href="https://maps.google.com/?q=20+Calle+Venecia,+Naguabo,+Puerto+Rico+00718" target="_blank" rel="noopener noreferrer" className="hover:text-white whitespace-nowrap">20 Calle Venecia, Naguabo, PR 00718</a></li>
             <li className="flex items-center gap-2"><Phone className="w-4 h-4" /> (787)874-2120</li>
             <li className="flex items-center gap-2"><Mail className="w-4 h-4" /> info@naguabo-commercial.com</li>
           </ul>
