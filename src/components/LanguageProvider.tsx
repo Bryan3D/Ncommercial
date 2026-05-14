@@ -10,14 +10,14 @@ interface LangContextValue {
 }
 
 const LangContext = createContext<LangContextValue>({
-  lang: 'en',
+  lang: 'es',
   toggle: () => {},
   t: (key) => key,
   tCat: (slug) => slug,
 });
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLang] = useState<Lang>('en');
+  const [lang, setLang] = useState<Lang>('es');
 
   useEffect(() => {
     const saved = localStorage.getItem('lang') as Lang | null;
