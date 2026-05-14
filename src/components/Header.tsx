@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { ShoppingCart, User, Search, MapPin, Phone, Sun, Moon } from "lucide-react";
+import { ShoppingCart, User, Search, MapPin, Phone, Clock, Sun, Moon } from "lucide-react";
 import { useCart } from "@/lib/cart-store";
 import { useTheme } from "@/components/ThemeProvider";
 import { useLanguage } from "@/components/LanguageProvider";
@@ -20,10 +20,16 @@ export default function Header() {
       {/* Top bar */}
       <div className="bg-brand text-white text-sm">
         <div className="max-w-7xl mx-auto px-4 py-1.5 flex justify-between items-center">
-          <div className="flex items-center gap-1">
-            <MapPin className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Naguabo, Puerto Rico</span>
-            <span className="sm:hidden">PR</span>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Naguabo, Puerto Rico</span>
+              <span className="sm:hidden">PR</span>
+            </span>
+            <span className="hidden md:flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5" />
+              {mounted ? t('header.storeHours') : 'Mon–Sat 7am–5pm'}
+            </span>
           </div>
           <div className="flex items-center gap-4">
             <a

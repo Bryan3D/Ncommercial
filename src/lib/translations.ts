@@ -3,7 +3,8 @@ export type Lang = 'en' | 'es';
 const ui: Record<string, { en: string; es: string }> = {
   // ── Header ──
   'header.search.placeholder': { en: 'What can we help you find?', es: '¿Qué estás buscando?' },
-  'header.openHours': { en: 'Open 24/7 Online · Free Pickup', es: 'Abierto 24/7 · Recogido Gratis' },
+  'header.openHours':   { en: 'Open 24/7 Online · Free Pickup', es: 'Abierto 24/7 · Recogido Gratis' },
+  'header.storeHours': { en: 'Mon–Sat 7am–5pm', es: 'Lun–Sáb 7am–5pm' },
   'header.account': { en: 'Account', es: 'Cuenta' },
   'header.cart': { en: 'Cart', es: 'Carrito' },
 
@@ -83,6 +84,42 @@ const ui: Record<string, { en: string; es: string }> = {
   'home.whatsapp.title': { en: 'Get exclusive deals on WhatsApp 📱', es: 'Recibe ofertas exclusivas por WhatsApp 📱' },
   'home.whatsapp.sub': { en: 'Subscribe to receive weekly offers, new arrivals, and pro tips.', es: 'Suscríbete para recibir ofertas semanales, novedades y consejos.' },
   'home.whatsapp.cta': { en: 'Subscribe via WhatsApp', es: 'Suscribirse por WhatsApp' },
+
+  // ── About page ──
+  'about.badge':          { en: '🇵🇷 Hardware Store · Est. Naguabo, PR', es: '🇵🇷 Ferretería · Naguabo, PR' },
+  'about.hero.title':     { en: 'Your Trusted Hardware Store in Eastern Puerto Rico', es: 'Tu Ferretería de Confianza en el Este de Puerto Rico' },
+  'about.hero.sub':       { en: 'Tools, building materials, plumbing, electrical, paint, and everything you need to complete your projects.', es: 'Herramientas, materiales de construcción, plomería, electricidad, pintura y todo lo que necesitas para completar tus proyectos.' },
+  'about.hero.shopCta':   { en: 'Shop Now', es: 'Comprar Ahora' },
+  'about.hero.contactCta':{ en: 'Contact Us', es: 'Contáctenos' },
+
+  'about.mission.label':  { en: 'Our Mission', es: 'Nuestra Misión' },
+  'about.mission.title':  { en: 'Built for Builders, Pros & Homeowners', es: 'Para Contratistas, Profesionales y el Hogar' },
+  'about.mission.p1':     { en: 'Naguabo Commercial is your trusted hardware store in eastern Puerto Rico. We specialize in building materials, tools, plumbing, electrical, paint, general hardware, and everything you need to complete your projects.', es: 'Naguabo Commercial es tu ferretería de confianza en el este de Puerto Rico. Nos especializamos en materiales de construcción, herramientas, plomería, electricidad, pintura, artículos de ferretería general y todo lo que necesitas para completar tus proyectos.' },
+  'about.mission.p2':     { en: 'Our commitment is to offer quality products, competitive prices, and personal, fast, and reliable service for contractors, professionals, and homeowners alike.', es: 'Nuestro compromiso es ofrecer productos de calidad, precios competitivos y un servicio cercano, rápido y confiable para contratistas, profesionales y clientes del hogar.' },
+  'about.mission.quote':  { en: 'Everything for your project — in one place!', es: '¡Todo para tu proyecto, en un solo lugar!' },
+
+  'about.values.title':   { en: 'Why Choose Us', es: '¿Por Qué Elegirnos?' },
+  'about.values.q1.title':{ en: 'Quality Products', es: 'Productos de Calidad' },
+  'about.values.q1.desc': { en: 'We carry trusted brands and carefully selected products you can rely on for every job.', es: 'Llevamos marcas reconocidas y productos seleccionados en los que puedes confiar para cada trabajo.' },
+  'about.values.q2.title':{ en: 'Competitive Prices', es: 'Precios Competitivos' },
+  'about.values.q2.desc': { en: 'Fair pricing for contractors and homeowners — no surprises, no markups.', es: 'Precios justos para contratistas y familias — sin sorpresas ni recargos.' },
+  'about.values.q3.title':{ en: 'Fast & Reliable Service', es: 'Servicio Rápido y Confiable' },
+  'about.values.q3.desc': { en: 'In-store pickup in 1 hour or delivery across Puerto Rico. Chat support available 24/7.', es: 'Recogido en tienda en 1 hora o entrega en todo Puerto Rico. Soporte por chat disponible 24/7.' },
+  'about.values.q4.title':{ en: 'Local & Community', es: 'Local y Comunitario' },
+  'about.values.q4.desc': { en: 'Proudly serving Naguabo and the eastern region of Puerto Rico. We know our customers by name.', es: 'Con orgullo sirviendo a Naguabo y la región este de Puerto Rico. Conocemos a nuestros clientes por nombre.' },
+
+  'about.categories.title': { en: 'What We Carry', es: 'Lo Que Ofrecemos' },
+  'about.categories.sub':   { en: 'From foundations to finishes — we have it all.', es: 'Desde cimientos hasta acabados — lo tenemos todo.' },
+
+  'about.cta.title':      { en: 'Find Solutions to Build, Repair, Remodel & Improve', es: 'Encuentra Soluciones para Construir, Reparar, Remodelar y Mejorar' },
+  'about.cta.sub':        { en: 'Browse our full catalog online or visit us in Naguabo.', es: 'Navega nuestro catálogo completo en línea o visítanos en Naguabo.' },
+  'about.cta.shop':       { en: 'Browse Products', es: 'Ver Productos' },
+  'about.cta.directions': { en: 'Get Directions', es: 'Cómo Llegar' },
+
+  'about.visit.title':    { en: 'Visit Us', es: 'Visítanos' },
+  'about.visit.hours':    { en: 'Store Hours', es: 'Horario' },
+  'about.visit.hoursVal': { en: 'Mon – Sat: 7:00 am – 5:00 pm', es: 'Lun – Sáb: 7:00 am – 5:00 pm' },
+  'about.visit.online':   { en: 'Online: 24/7', es: 'En línea: 24/7' },
 
   // ── Footer ──
   'footer.customerService': { en: 'Customer Service', es: 'Servicio al Cliente' },
