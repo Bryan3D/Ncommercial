@@ -3,6 +3,7 @@ export interface Product {
   name: string;
   slug: string;
   description: string;
+  descriptionEs?: string;
   price: number;
   comparePrice?: number | null;
   stock: number;

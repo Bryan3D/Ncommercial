@@ -19,9 +19,24 @@ const ui: Record<string, { en: string; es: string }> = {
   'nav.lighting': { en: 'Lighting', es: 'Iluminación' },
 
   // ── ProductCard ──
-  'product.addToCart': { en: 'Add to cart', es: 'Añadir al carrito' },
-  'product.lowStock': { en: 'Low stock', es: 'Poco stock' },
-  'product.outOfStock': { en: 'Out of stock', es: 'Agotado' },
+  'product.addToCart':        { en: 'Add to cart',           es: 'Añadir al carrito' },
+  'product.lowStock':         { en: 'Low stock',             es: 'Poco stock' },
+  'product.outOfStock':       { en: 'Out of stock',          es: 'Agotado' },
+
+  // ── Product detail page ──
+  'product.backToStore':      { en: '← Back to store',       es: '← Volver a la tienda' },
+  'product.notFound':         { en: 'Product not found',     es: 'Producto no encontrado' },
+  'product.reviews':          { en: 'reviews',               es: 'reseñas' },
+  'product.save':             { en: 'Save',                  es: 'Ahorras' },
+  'product.ships':            { en: 'Ships in 1-2 days',     es: 'Envío en 1-2 días' },
+  'product.shipsNote':        { en: 'Free for orders over $99', es: 'Gratis en pedidos sobre $99' },
+  'product.pickup':           { en: 'Pickup in 1 hour',      es: 'Recogido en 1 hora' },
+  'product.pickupNote':       { en: 'Naguabo store',         es: 'Tienda Naguabo' },
+  'product.quantity':         { en: 'Quantity',              es: 'Cantidad' },
+  'product.inStock':          { en: 'in stock',              es: 'en inventario' },
+  'product.buyNow':           { en: 'Buy now',               es: 'Comprar ahora' },
+  'product.askWhatsApp':      { en: 'Ask on WhatsApp',       es: 'Preguntar por WhatsApp' },
+  'product.share':            { en: 'Share',                 es: 'Compartir' },
 
   // ── Store page ──
   'store.filters': { en: 'Filters', es: 'Filtros' },

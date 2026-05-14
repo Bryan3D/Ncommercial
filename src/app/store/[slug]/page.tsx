@@ -6,6 +6,7 @@ import { mockProducts } from '@/lib/mock-data';
 import { useCart } from '@/lib/cart-store';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import Link from 'next/link';
+import { useLanguage } from '@/components/LanguageProvider';
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -13,12 +14,13 @@ export default function ProductPage() {
   const product = mockProducts.find((p) => p.slug === slug);
   const [qty, setQty] = useState(1);
   const addItem = useCart((s) => s.addItem);
+  const { t, lang } = useLanguage();
 
   if (!product) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold">Product not found</h1>
-        <Link href="/store" className="text-brand mt-4 inline-block">← Back to store</Link>
+        <h1 className="text-2xl font-bold">{t('product.notFound')}</h1>
+        <Link href="/store" className="text-brand mt-4 inline-block">{t('product.backToStore')}</Link>
       </div>
     );
   }
@@ -52,8 +54,8 @@ export default function ProductPage() {
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Breadcrumb */}
       <nav className="text-sm text-gray-500 dark:text-slate-400 mb-4">
-        <Link href="/" className="hover:text-brand">Home</Link> /{' '}
-        <Link href="/store" className="hover:text-brand">Store</Link> /{' '}
+        <Link href="/" className="hover:text-brand">{t('breadcrumb.home')}</Link> /{' '}
+        <Link href="/store" className="hover:text-brand">{t('breadcrumb.store')}</Link> /{' '}
         <span className="text-gray-700 dark:text-slate-300">{product.name}</span>
       </nav>
 
@@ -93,7 +95,7 @@ export default function ProductPage() {
               ))}
             </div>
             <span className="text-sm text-gray-600 dark:text-slate-400">
-              {product.rating} ({product.reviewCount.toLocaleString()} reviews)
+              {product.rating} ({product.reviewCount.toLocaleString()} {t('product.reviews')})
             </span>
           </div>
 
@@ -108,33 +110,35 @@ export default function ProductPage() {
                   ${product.comparePrice.toFixed(2)}
                 </span>
                 <span className="bg-brand text-white text-sm font-bold px-2 py-1 rounded">
-                  Save {discount}%
+                  {t('product.save')} {discount}%
                 </span>
               </>
             )}
           </div>
 
-          <p className="mt-4 text-gray-700 dark:text-slate-300">{product.description}</p>
+          <p className="mt-4 text-gray-700 dark:text-slate-300">
+            {lang === 'es' && product.descriptionEs ? product.descriptionEs : product.description}
+          </p>
 
           {/* Shipping / Pickup */}
           <div className="mt-6 grid grid-cols-2 gap-3 text-sm">
             <div className="border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 rounded p-3">
               <div className="flex items-center gap-2 font-semibold text-green-600 dark:text-green-400">
-                <Truck className="w-4 h-4" /> Ships in 1-2 days
+                <Truck className="w-4 h-4" /> {t('product.ships')}
               </div>
-              <div className="text-gray-500 dark:text-slate-400 text-xs mt-1">Free for orders over $99</div>
+              <div className="text-gray-500 dark:text-slate-400 text-xs mt-1">{t('product.shipsNote')}</div>
             </div>
             <div className="border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 rounded p-3">
               <div className="flex items-center gap-2 font-semibold text-accent dark:text-blue-400">
-                <MapPin className="w-4 h-4" /> Pickup in 1 hour
+                <MapPin className="w-4 h-4" /> {t('product.pickup')}
               </div>
-              <div className="text-gray-500 dark:text-slate-400 text-xs mt-1">Naguabo store</div>
+              <div className="text-gray-500 dark:text-slate-400 text-xs mt-1">{t('product.pickupNote')}</div>
             </div>
           </div>
 
           {/* Quantity */}
           <div className="mt-6 flex items-center gap-3">
-            <label className="font-semibold text-sm text-gray-700 dark:text-slate-300">Quantity</label>
+            <label className="font-semibold text-sm text-gray-700 dark:text-slate-300">{t('product.quantity')}</label>
             <div className="flex border border-gray-300 dark:border-slate-600 rounded overflow-hidden">
               <button
                 type="button"
@@ -174,7 +178,7 @@ export default function ProductPage() {
                 +
               </button>
             </div>
-            <span className="text-sm text-gray-500 dark:text-slate-400">{product.stock} in stock</span>
+            <span className="text-sm text-gray-500 dark:text-slate-400">{product.stock} {t('product.inStock')}</span>
           </div>
 
           {/* Actions */}
@@ -184,14 +188,14 @@ export default function ProductPage() {
               disabled={product.stock === 0}
               className="btn-secondary flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              <ShoppingCart className="w-4 h-4" /> Add to cart
+              <ShoppingCart className="w-4 h-4" /> {t('product.addToCart')}
             </button>
             <button
               onClick={handleBuyNow}
               disabled={product.stock === 0}
               className="btn-primary disabled:opacity-50"
             >
-              Buy now
+              {t('product.buyNow')}
             </button>
           </div>
 
@@ -206,14 +210,14 @@ export default function ProductPage() {
                          hover:bg-green-50 dark:hover:bg-green-950
                          transition-colors"
             >
-              <MessageCircle className="w-4 h-4" /> Ask on WhatsApp
+              <MessageCircle className="w-4 h-4" /> {t('product.askWhatsApp')}
             </a>
             <button
               type="button"
               onClick={() => navigator.share?.({ title: product.name, url: window.location.href })}
               className="btn-outline flex items-center justify-center gap-2"
             >
-              <Share2 className="w-4 h-4" /> Share
+              <Share2 className="w-4 h-4" /> {t('product.share')}
             </button>
           </div>
         </div>
