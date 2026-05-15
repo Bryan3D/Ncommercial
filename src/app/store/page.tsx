@@ -1,6 +1,6 @@
 'use client';
 import { useSearchParams } from 'next/navigation';
-import { useMemo, useState, Suspense } from 'react';
+import { useMemo, useState, useEffect, Suspense } from 'react';
 import ProductCard from '@/components/ProductCard';
 import { mockProducts, mockCategories } from '@/lib/mock-data';
 import { SlidersHorizontal } from 'lucide-react';
@@ -15,6 +15,10 @@ function StoreContent() {
 
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'rating'>('featured');
   const [maxPrice, setMaxPrice] = useState<number>(500);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+
+  // Reset brand filter when navigating to a different category
+  useEffect(() => { setSelectedBrand(null); }, [categorySlug]);
 
   const topLevelCategories = useMemo(
     () => mockCategories.filter((c) => !c.parentSlug),
@@ -75,11 +79,11 @@ function StoreContent() {
     [categorySlug]
   );
 
-  const filtered = useMemo(() => {
+  // Pass 1: everything except brand — used to derive which brands are available
+  const preFiltered = useMemo(() => {
     let list = [...mockProducts];
 
     if (currentSection && categorySlug === currentSection.slug) {
-      // "All" tab for this section — include products from all descendants
       const allIds = new Set(getDescendantIds(currentSection.slug));
       list = list.filter((p) => allIds.has(p.categoryId));
     } else if (categoryId) {
@@ -96,6 +100,19 @@ function StoreContent() {
     }
     if (dealsOnly) list = list.filter((p) => p.comparePrice);
     list = list.filter((p) => p.price <= maxPrice);
+    return list;
+  }, [categoryId, categorySlug, currentSection, search, dealsOnly, maxPrice]);
+
+  const availableBrands = useMemo(() => {
+    const brands = new Set(preFiltered.map((p) => p.brand).filter(Boolean) as string[]);
+    return Array.from(brands).sort();
+  }, [preFiltered]);
+
+  // Pass 2: apply brand filter + sort
+  const filtered = useMemo(() => {
+    let list = selectedBrand
+      ? preFiltered.filter((p) => p.brand === selectedBrand)
+      : [...preFiltered];
 
     switch (sortBy) {
       case 'price-asc': list.sort((a, b) => a.price - b.price); break;
@@ -104,7 +121,7 @@ function StoreContent() {
       default: list.sort((a, b) => Number(b.featured) - Number(a.featured));
     }
     return list;
-  }, [categoryId, categorySlug, currentSection, search, dealsOnly, sortBy, maxPrice]);
+  }, [preFiltered, selectedBrand, sortBy]);
 
   const pageTitle = currentSection && categorySlug === currentSection.slug
     ? tCat(currentSection.slug)
@@ -204,7 +221,7 @@ function StoreContent() {
 
           {/* Sub-category tabs (any section with sub-categories) */}
           {currentSection && sectionSubCategories.length > 0 && (
-            <div className="flex gap-1.5 overflow-x-auto pb-1 mb-5 border-b border-gray-200 dark:border-slate-700">
+            <div className="flex gap-1.5 overflow-x-auto pb-1 mb-3 border-b border-gray-200 dark:border-slate-700">
               <a
                 href={`/store?category=${currentSection.slug}`}
                 className={`shrink-0 px-3 py-1.5 rounded-t text-sm font-medium transition-colors ${
@@ -227,6 +244,38 @@ function StoreContent() {
                 >
                   {sub.icon} {tCat(sub.slug)}
                 </a>
+              ))}
+            </div>
+          )}
+
+          {/* Brand filter tabs — shown when 2+ brands exist in current view */}
+          {availableBrands.length >= 2 && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 mb-5">
+              <span className="shrink-0 text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
+                {t('store.brand')}:
+              </span>
+              <button
+                onClick={() => setSelectedBrand(null)}
+                className={`shrink-0 px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                  !selectedBrand
+                    ? 'bg-brand text-white'
+                    : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:text-brand dark:hover:text-brand'
+                }`}
+              >
+                {t('store.allBrands')}
+              </button>
+              {availableBrands.map((brand) => (
+                <button
+                  key={brand}
+                  onClick={() => setSelectedBrand(selectedBrand === brand ? null : brand)}
+                  className={`shrink-0 px-3 py-1 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
+                    selectedBrand === brand
+                      ? 'bg-brand text-white'
+                      : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:text-brand dark:hover:text-brand'
+                  }`}
+                >
+                  {brand}
+                </button>
               ))}
             </div>
           )}

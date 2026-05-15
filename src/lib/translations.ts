@@ -18,6 +18,7 @@ const ui: Record<string, { en: string; es: string }> = {
   'nav.roofSealing': { en: '🏠 Roof Sealing', es: '🏠 Impermeabilización' },
   'nav.garden': { en: 'Garden', es: 'Jardín' },
   'nav.lighting': { en: 'Lighting', es: 'Iluminación' },
+  'nav.merch':    { en: '🛍️ Merch', es: '🛍️ Merch' },
 
   // ── ProductCard ──
   'product.addToCart':        { en: 'Add to cart',           es: 'Añadir al carrito' },
@@ -53,6 +54,8 @@ const ui: Record<string, { en: string; es: string }> = {
   'store.resultsFor': { en: 'Results for', es: 'Resultados para' },
   'store.todaysDeals': { en: "Today's Deals", es: 'Ofertas de Hoy' },
   'store.items': { en: 'items', es: 'artículos' },
+  'store.allBrands': { en: 'All Brands', es: 'Todas las Marcas' },
+  'store.brand': { en: 'Brand', es: 'Marca' },
 
   // ── Breadcrumb ──
   'breadcrumb.home': { en: 'Home', es: 'Inicio' },
@@ -133,7 +136,7 @@ const ui: Record<string, { en: string; es: string }> = {
   'footer.orderStatus': { en: 'Order Status', es: 'Estado del Pedido' },
   'footer.guestCheckout': { en: 'Guest Checkout', es: 'Comprar sin Cuenta' },
   'footer.company': { en: 'Company', es: 'Empresa' },
-  'footer.aboutUs': { en: 'About Us', es: 'Sobre Nosotros' },
+  'footer.aboutUs':  { en: 'About Us', es: 'Sobre Nosotros' },
   'footer.careers': { en: 'Careers', es: 'Empleos' },
   'footer.privacy': { en: 'Privacy', es: 'Privacidad' },
   'footer.terms': { en: 'Terms', es: 'Términos' },

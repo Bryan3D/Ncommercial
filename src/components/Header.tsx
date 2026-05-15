@@ -173,6 +173,9 @@ export default function Header() {
           <Link href="/store?category=lighting" className="text-gray-700 dark:text-slate-300 hover:text-brand whitespace-nowrap">
             {mounted ? t('nav.lighting') : 'Lighting'}
           </Link>
+          <Link href="/merch" className="text-brand font-bold whitespace-nowrap hover:text-brand-dark">
+            {mounted ? t('nav.merch') : '🛍️ Merch'}
+          </Link>
           <Link href="/admin" className="ml-auto text-accent whitespace-nowrap font-semibold">
             Admin
           </Link>

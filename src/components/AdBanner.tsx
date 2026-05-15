@@ -66,6 +66,14 @@ const slides: Slide[] = [
     image: '/DelisDelicias_n.jpg',
   },
   {
+    id: 8,
+    label: 'NEW',
+    headline: 'Naguabo Commercial Merch Is Here!',
+    sub: 'Shirts, tumblers, trucker hats, keychains & more — rep your ferretería 🇵🇷',
+    bg: 'from-brand to-brand-dark',
+    cta: { text: 'Shop Merch', href: '/merch' },
+  },
+  {
     id: 6,
     label: 'PROMO',
     headline: 'Your Ad Could Be Here',
