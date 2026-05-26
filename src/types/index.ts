@@ -15,6 +15,8 @@ export interface Product {
   reviewCount: number;
   featured: boolean;
   categoryId: string;
+  size?: string;
+  variantGroupId?: string;
   category?: Category;
 }
 
