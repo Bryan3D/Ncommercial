@@ -1,7 +1,23 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:www.truper.com)"
+      "WebFetch(domain:www.truper.com)",
+      "WebFetch(domain:fluidmaster.com)",
+      "WebFetch(domain:www.walmart.com)",
+      "WebFetch(domain:www.lowes.com)",
+      "WebFetch(domain:bullbond.com)",
+      "WebFetch(domain:conspro.com)",
+      "Bash(npx tsc *)",
+      "Bash(git checkout *)",
+      "Bash(where gh *)",
+      "Bash(git credential *)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(bun --version)",
+      "Bash(git --version)",
+      "Bash(bash setup)",
+      "PowerShell(winget install --id GitHub.cli --silent --accept-package-agreements --accept-source-agreements)",
+      "Bash(\"C:/Program Files/GitHub CLI/gh.exe\" auth login --with-token)",
+      "Bash(\"C:/Program Files/GitHub CLI/gh.exe\" auth status)"
     ]
   }
 }

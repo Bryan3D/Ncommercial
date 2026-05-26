@@ -61,11 +61,11 @@ function buildSystemPrompt(ragContext: string): string {
     .map((p) => `${p.name} — $${p.price.toFixed(2)} (SKU: ${p.sku})`)
     .join('\n  ');
 
-  return `You are the friendly, knowledgeable 24/7 bilingual assistant for Naguabo Commercial — a hardware and home-improvement store in Naguabo, Puerto Rico (similar to Home Depot or Lowe's).
+  return `Eres ABO, el asistente amigable y experto de Naguabo Commercial disponible 24/7 — una ferretería y tienda de mejoras para el hogar en Naguabo, Puerto Rico (similar a Home Depot o Lowe's).
 
-IDENTITY & LANGUAGE
-• Respond in the same language the customer uses. If they write in Spanish, reply in Spanish. If English, reply in English. If mixed, mirror their mix.
-• Be warm, concise, and helpful. Use emoji sparingly (1 per reply max).
+IDENTIDAD E IDIOMA
+• Responde siempre en español. Si el cliente escribe en inglés, responde en español de todas formas, pero puedes incluir la traducción entre paréntesis si ayuda.
+• Sé cálido, conciso y útil. Usa emojis con moderación (máximo 1 por respuesta).
 
 STORE DETAILS
 • Address: 20 Calle Venecia, Naguabo, Puerto Rico 00718
@@ -104,16 +104,16 @@ function ruleBasedReply(msg: string, ragPairs: ReturnType<typeof retrieve>): str
   const m = msg.toLowerCase();
 
   if (/horario|hours|open|abierto|cuándo|cuando/.test(m)) {
-    return 'Estamos abiertos 24/7 online. Our physical store in Naguabo is open daily 7 AM – 9 PM. / La tienda física está abierta de 7 AM a 9 PM todos los días. ¿Algo más?';
+    return 'Estamos disponibles en línea 24/7. La tienda física en Naguabo está abierta todos los días de 7 AM a 9 PM. ¿Algo más en que pueda ayudarte?';
   }
   if (/envío|shipping|delivery|entrega/.test(m)) {
-    return 'Hacemos entregas en todo Puerto Rico. / We ship across Puerto Rico in 1–2 business days. Free in-store pickup in ~1 hour!';
+    return 'Hacemos entregas en todo Puerto Rico en 1–2 días hábiles. ¡Recogida en tienda gratis en aproximadamente 1 hora!';
   }
   if (/devolución|return|reembolso|refund/.test(m)) {
-    return 'Ofrecemos devoluciones en 90 días. / We offer 90-day returns. Bring the item with receipt to our Naguabo store or contact us via WhatsApp.';
+    return 'Ofrecemos devoluciones en 90 días. Trae el artículo con el recibo a nuestra tienda en Naguabo o contáctanos por WhatsApp.';
   }
   if (/pago|payment|pay|stripe|tarjeta|card|ath/.test(m)) {
-    return 'Aceptamos Visa, Mastercard, Amex, ATH Móvil y más — todo seguro con Stripe. / We accept major cards + ATH Móvil, secured by Stripe. Guest checkout available, no account needed.';
+    return 'Aceptamos Visa, Mastercard, Amex, ATH Móvil y más — todo de forma segura con Stripe. Puedes pagar como invitado sin necesidad de crear una cuenta.';
   }
   if (/precio|price|cost|cuesta|cuanto/.test(m)) {
     const matches = mockProducts
@@ -122,27 +122,27 @@ function ruleBasedReply(msg: string, ragPairs: ReturnType<typeof retrieve>): str
       )
       .slice(0, 3);
     if (matches.length) {
-      return matches.map((p) => `• ${p.name}: $${p.price.toFixed(2)}`).join('\n') + '\n\n¿Deseas añadir algo al carrito? / Want to add any to your cart?';
+      return matches.map((p) => `• ${p.name}: $${p.price.toFixed(2)}`).join('\n') + '\n\n¿Deseas añadir alguno al carrito?';
     }
   }
   if (/herramienta|tool|drill|saw|martillo|taladro/.test(m)) {
-    return 'Tenemos herramientas DEWALT, RYOBI, Stanley y más. / We stock DEWALT, RYOBI, Stanley, and more. Browse at /store?category=tools';
+    return 'Tenemos herramientas DEWALT, RYOBI, Stanley y más. Explora nuestra selección en /store?category=tools';
   }
   if (/pintura|paint/.test(m)) {
-    return 'BEHR Premium Plus Interior Paint — $32.98/gal en miles de colores. / Available in thousands of colors. Ver más en /store?category=paint';
+    return 'BEHR Premium Plus Interior Paint — $32.98/gal disponible en miles de colores. Ver más en /store?category=paint';
   }
   if (/techo|roof|impermeab|sealant|sellado/.test(m)) {
-    return 'Tenemos productos CROSSCO® y Bull-Bond® para impermeabilizar techos. / We carry CROSSCO® and Bull-Bond® roof sealants and coatings. Browse at /store?category=roof-sealing';
+    return 'Tenemos productos CROSSCO® y Bull-Bond® para impermeabilizar techos. Ver más en /store?category=roof-sealing';
   }
   if (/cemento|concreto|mortero|grout|thinset|azulejo|tile/.test(m)) {
-    return 'Tenemos una amplia selección de morteros, lechadas y adhesivos WECO, Bull-Bond® y más. / We carry WECO, Bull-Bond®, and more. Browse at /store?category=building-materials';
+    return 'Tenemos una amplia selección de morteros, lechadas y adhesivos WECO, Bull-Bond® y más. Ver más en /store?category=building-materials';
   }
   if (/hola|hi|hello|buenos|good|hey/.test(m)) {
-    return '¡Hola! 👋 Soy tu asistente de Naguabo Commercial. / I\'m your Naguabo Commercial assistant. Ask me about products, prices, hours, shipping, or returns. ¿Qué buscas hoy?';
+    return '¡Hola! 👋 Soy ABO, tu asistente de Naguabo Commercial. Puedo ayudarte con productos, precios, horarios, envíos o devoluciones. ¿Qué buscas hoy?';
   }
   if (/whatsapp|número|number|teléfono|phone/.test(m)) {
-    return 'Puedes contactarnos por WhatsApp al (787) 874-2120 o llamarnos directamente. / You can reach us on WhatsApp or by phone at (787) 874-2120.';
+    return 'Puedes contactarnos por WhatsApp al (787) 874-2120 o llamarnos directamente.';
   }
 
-  return 'Puedo ayudarte con productos, precios, pedidos, envíos, devoluciones y más. / I can help with products, orders, shipping, returns, or store info. También puedes contactarnos por WhatsApp al (787) 874-2120. ¿Qué necesitas?';
+  return 'Puedo ayudarte con productos, precios, pedidos, envíos, devoluciones y más. También puedes contactarnos por WhatsApp al (787) 874-2120. ¿Qué necesitas?';
 }
