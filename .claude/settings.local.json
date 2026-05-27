@@ -17,7 +17,8 @@
       "Bash(bash setup)",
       "PowerShell(winget install --id GitHub.cli --silent --accept-package-agreements --accept-source-agreements)",
       "Bash(\"C:/Program Files/GitHub CLI/gh.exe\" auth login --with-token)",
-      "Bash(\"C:/Program Files/GitHub CLI/gh.exe\" auth status)"
+      "Bash(\"C:/Program Files/GitHub CLI/gh.exe\" auth status)",
+      "Bash(node -e ' *)"
     ]
   }
 }

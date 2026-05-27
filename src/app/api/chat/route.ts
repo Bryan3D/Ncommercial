@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     console.error('[chat]', e);
     return NextResponse.json({
-      reply: 'Lo siento, tuve un problema. / Sorry, I had trouble responding. Please try WhatsApp at (787) 874-2120.',
+      reply: 'Lo siento, tuve un problema. Contáctanos por WhatsApp al +1 (939) 382-3332 o por email a ferreteriarb2@gmail.com.',
     });
   }
 }
@@ -69,10 +69,10 @@ IDENTIDAD E IDIOMA
 
 STORE DETAILS
 • Address: 20 Calle Venecia, Naguabo, Puerto Rico 00718
-• Phone: (787) 874-2120 | Email: info@naguabo-commercial.com
-• Online: Open 24/7 | Physical store: 7 AM – 9 PM daily
+• WhatsApp / Phone: +1 (939) 382-3332 | Email: ferreteriarb2@gmail.com
+• Online: Open 24/7 | Physical store: Monday–Saturday 7 AM – 5 PM (closed Sundays)
 • Free in-store pickup in ~1 hour | Fast delivery across Puerto Rico
-• Secure checkout via Stripe | 90-day returns
+• Secure checkout via Stripe | Returns are handled case by case with manager approval
 
 DEPARTMENTS
 ${TOP_LEVEL_CATS}
@@ -85,7 +85,7 @@ INSTRUCTIONS
 2. If the customer asks about a product you don't have a fact for, give general guidance and suggest they check the store website or contact via WhatsApp.
 3. Never make up prices or stock levels beyond what is in the facts.
 4. Keep answers under 4 sentences unless the customer explicitly asks for more detail.
-5. If you can't help, direct them to WhatsApp at (787) 874-2120.
+5. If you can't help, direct them to WhatsApp at +1 (939) 382-3332 or email ferreteriarb2@gmail.com.
 ${ragContext}`;
 }
 
@@ -104,13 +104,13 @@ function ruleBasedReply(msg: string, ragPairs: ReturnType<typeof retrieve>): str
   const m = msg.toLowerCase();
 
   if (/horario|hours|open|abierto|cuándo|cuando/.test(m)) {
-    return 'Estamos disponibles en línea 24/7. La tienda física en Naguabo está abierta todos los días de 7 AM a 9 PM. ¿Algo más en que pueda ayudarte?';
+    return 'Estamos disponibles en línea 24/7. La tienda física en Naguabo abre de lunes a sábado, de 7 AM a 5 PM (cerrado los domingos). ¿Algo más en que pueda ayudarte?';
   }
   if (/envío|shipping|delivery|entrega/.test(m)) {
     return 'Hacemos entregas en todo Puerto Rico en 1–2 días hábiles. ¡Recogida en tienda gratis en aproximadamente 1 hora!';
   }
   if (/devolución|return|reembolso|refund/.test(m)) {
-    return 'Ofrecemos devoluciones en 90 días. Trae el artículo con el recibo a nuestra tienda en Naguabo o contáctanos por WhatsApp.';
+    return 'Las devoluciones se manejan caso por caso con aprobación del gerente. Contáctanos por WhatsApp al +1 (939) 382-3332 o escríbenos a ferreteriarb2@gmail.com y te atendemos enseguida.';
   }
   if (/pago|payment|pay|stripe|tarjeta|card|ath/.test(m)) {
     return 'Aceptamos Visa, Mastercard, Amex, ATH Móvil y más — todo de forma segura con Stripe. Puedes pagar como invitado sin necesidad de crear una cuenta.';
@@ -141,8 +141,8 @@ function ruleBasedReply(msg: string, ragPairs: ReturnType<typeof retrieve>): str
     return '¡Hola! 👋 Soy ABO, tu asistente de Naguabo Commercial. Puedo ayudarte con productos, precios, horarios, envíos o devoluciones. ¿Qué buscas hoy?';
   }
   if (/whatsapp|número|number|teléfono|phone/.test(m)) {
-    return 'Puedes contactarnos por WhatsApp al (787) 874-2120 o llamarnos directamente.';
+    return 'Puedes contactarnos por WhatsApp al +1 (939) 382-3332 o llamarnos directamente.';
   }
 
-  return 'Puedo ayudarte con productos, precios, pedidos, envíos, devoluciones y más. También puedes contactarnos por WhatsApp al (787) 874-2120. ¿Qué necesitas?';
+  return 'Puedo ayudarte con productos, precios, pedidos, envíos, devoluciones y más. También puedes contactarnos por WhatsApp al +1 (939) 382-3332. ¿Qué necesitas?';
 }
