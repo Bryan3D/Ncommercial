@@ -69,7 +69,7 @@ IDENTIDAD E IDIOMA
 
 STORE DETAILS
 • Address: 20 Calle Venecia, Naguabo, Puerto Rico 00718
-• WhatsApp / Phone: +1 (939) 382-3332 | Email: ferreteriarb2@gmail.com
+• Teléfono tienda: (787) 874-2120 | WhatsApp: +1 (939) 382-3332 | Email: ferreteriarb2@gmail.com
 • Online: Open 24/7 | Physical store: Monday–Saturday 7 AM – 5 PM (closed Sundays)
 • Free in-store pickup in ~1 hour | Fast delivery across Puerto Rico
 • Secure checkout via Stripe | Returns are handled case by case with manager approval
@@ -141,7 +141,7 @@ function ruleBasedReply(msg: string, ragPairs: ReturnType<typeof retrieve>): str
     return '¡Hola! 👋 Soy ABO, tu asistente de Naguabo Commercial. Puedo ayudarte con productos, precios, horarios, envíos o devoluciones. ¿Qué buscas hoy?';
   }
   if (/whatsapp|número|number|teléfono|phone/.test(m)) {
-    return 'Puedes contactarnos por WhatsApp al +1 (939) 382-3332 o llamarnos directamente.';
+    return 'El teléfono de la tienda es (787) 874-2120. También puedes contactarnos por WhatsApp al +1 (939) 382-3332.';
   }
 
   return 'Puedo ayudarte con productos, precios, pedidos, envíos, devoluciones y más. También puedes contactarnos por WhatsApp al +1 (939) 382-3332. ¿Qué necesitas?';
