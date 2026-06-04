@@ -141,7 +141,7 @@ export default function HomePage() {
             <p className="text-green-50 mt-1">{t('home.whatsapp.sub')}</p>
           </div>
           <a
-            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '17875551234'}?text=${encodeURIComponent('Subscribe me to deals!')}`}
+            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '19393823332'}?text=${encodeURIComponent('Subscribe me to deals!')}`}
             target="_blank" rel="noopener noreferrer"
             className="bg-white text-[#25D366] font-bold px-6 py-3 rounded-md hover:bg-gray-100"
           >
