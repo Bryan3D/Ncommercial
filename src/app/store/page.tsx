@@ -7,6 +7,10 @@ import type { Product } from '@/types';
 import { SlidersHorizontal } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageProvider';
 
+const PRICE_MIN = 0;
+const PRICE_MAX = 500;
+const PRICE_STEP = 10;
+
 function StoreContent() {
   const params = useSearchParams();
   const categorySlug = params.get('category') || '';
@@ -15,13 +19,18 @@ function StoreContent() {
   const { t, tCat } = useLanguage();
 
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'rating'>('featured');
-  const [minPrice, setMinPrice] = useState<number>(0);
-  const [maxPrice, setMaxPrice] = useState<number>(500);
+  const [minPrice, setMinPrice] = useState<number>(PRICE_MIN);
+  const [maxPrice, setMaxPrice] = useState<number>(PRICE_MAX);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
-  // Reset brand and size filters when navigating to a different category
-  useEffect(() => { setSelectedBrand(null); setSelectedSize(null); }, [categorySlug]);
+  // Reset all filters when navigating to a different category
+  useEffect(() => {
+    setSelectedBrand(null);
+    setSelectedSize(null);
+    setMinPrice(PRICE_MIN);
+    setMaxPrice(PRICE_MAX);
+  }, [categorySlug]);
 
   const topLevelCategories = useMemo(
     () => mockCategories.filter((c) => !c.parentSlug),
@@ -220,9 +229,9 @@ function StoreContent() {
                   <span className="text-xs text-gray-500 dark:text-slate-400">{t('store.minPrice')}</span>
                   <input
                     type="range"
-                    min="0"
-                    max="500"
-                    step="10"
+                    min={PRICE_MIN}
+                    max={PRICE_MAX}
+                    step={PRICE_STEP}
                     value={minPrice}
                     onChange={(e) => {
                       const v = Number(e.target.value);
@@ -236,9 +245,9 @@ function StoreContent() {
                   <span className="text-xs text-gray-500 dark:text-slate-400">{t('store.maxPrice')}</span>
                   <input
                     type="range"
-                    min="0"
-                    max="500"
-                    step="10"
+                    min={PRICE_MIN}
+                    max={PRICE_MAX}
+                    step={PRICE_STEP}
                     value={maxPrice}
                     onChange={(e) => {
                       const v = Number(e.target.value);

@@ -21,7 +21,11 @@
       "Bash(node -e ' *)",
       "Bash(Get-ChildItem -Path \"K:\\\\3D60Creations-Projects\\\\NGC\\\\naguabo-commercial\" -Force)",
       "Bash(Select-Object Name, Mode)",
-      "Bash(Format-Table -AutoSize)"
+      "Bash(Format-Table -AutoSize)",
+      "WebFetch(domain:github.com)",
+      "Bash(git clone *)",
+      "Skill(gstack)",
+      "Skill(gstack:*)"
     ]
   }
 }

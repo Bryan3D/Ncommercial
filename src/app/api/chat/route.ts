@@ -1,8 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { mockProducts, mockCategories } from '@/lib/mock-data';
 import { retrieve, formatContext } from '@/lib/rag';
+import { WHATSAPP_NUMBER } from '@/lib/whatsapp';
 
 interface ChatMessage { role: 'user' | 'assistant'; content: string; }
+
+const STORE_EMAIL = process.env.STORE_CONTACT_EMAIL || 'ferreteriarb2@gmail.com';
+// Format raw digits (e.g. "19393823332") as "+1 (939) 382-3332" for display
+const WHATSAPP_DISPLAY = WHATSAPP_NUMBER.replace(/^1(\d{3})(\d{3})(\d{4})$/, '+1 ($1) $2-$3');
+
+// Simple in-process rate limiter: 20 requests per IP per minute
+// Resets on cold start; add upstash/ratelimit for durable cross-instance limiting
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + 60_000 });
+    return true;
+  }
+  if (entry.count >= 20) return false;
+  entry.count++;
+  return true;
+}
 
 const TOP_LEVEL_CATS = mockCategories
   .filter((c) => !c.parentSlug)
@@ -10,8 +30,28 @@ const TOP_LEVEL_CATS = mockCategories
   .join(', ');
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json({ reply: 'Demasiadas solicitudes. Por favor intenta de nuevo en un momento.' }, { status: 429 });
+  }
+
   try {
-    const { messages } = (await req.json()) as { messages: ChatMessage[] };
+    const body = await req.json().catch(() => null);
+    if (!body || !Array.isArray(body.messages) || body.messages.length === 0) {
+      return NextResponse.json({ reply: '¿En qué te puedo ayudar?' });
+    }
+    const messages: ChatMessage[] = body.messages
+      .filter((m: unknown) => {
+        if (!m || typeof m !== 'object') return false;
+        const role = (m as Record<string, unknown>).role;
+        return role === 'user' || role === 'assistant';
+      })
+      .slice(-20) // cap at 20 turns
+      .map((m: Record<string, unknown>) => ({
+        role: m.role as 'user' | 'assistant',
+        content: String(m.content ?? '').slice(0, 500), // 500 char max per message
+      }));
+
     const userMsg = messages[messages.length - 1]?.content || '';
 
     // Retrieve relevant Q&A pairs from the bilingual knowledge base
@@ -47,7 +87,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     console.error('[chat]', e);
     return NextResponse.json({
-      reply: 'Lo siento, tuve un problema. Contáctanos por WhatsApp al +1 (939) 382-3332 o por email a ferreteriarb2@gmail.com.',
+      reply: `Lo siento, tuve un problema. Contáctanos por WhatsApp al ${WHATSAPP_DISPLAY} o por email a ${STORE_EMAIL}.`,
     });
   }
 }
@@ -69,10 +109,10 @@ IDENTIDAD E IDIOMA
 
 STORE DETAILS
 • Address: 20 Calle Venecia, Naguabo, Puerto Rico 00718
-• Teléfono tienda: (787) 874-2120 | WhatsApp: +1 (939) 382-3332 | Email: ferreteriarb2@gmail.com
+• Teléfono tienda: (787) 874-2120 | WhatsApp: ${WHATSAPP_DISPLAY} | Email: ${STORE_EMAIL}
 • Online: Open 24/7 | Physical store: Monday–Saturday 7 AM – 5 PM (closed Sundays)
 • Free in-store pickup in ~1 hour | Fast delivery across Puerto Rico
-• Secure checkout via Stripe | Returns are handled case by case with manager approval
+• Secure checkout via Stripe | Devoluciones aceptadas dentro de los 30 días calendario desde la compra (producto original sin usar)
 
 DEPARTMENTS
 ${TOP_LEVEL_CATS}
@@ -85,7 +125,7 @@ INSTRUCTIONS
 2. If the customer asks about a product you don't have a fact for, give general guidance and suggest they check the store website or contact via WhatsApp.
 3. Never make up prices or stock levels beyond what is in the facts.
 4. Keep answers under 4 sentences unless the customer explicitly asks for more detail.
-5. If you can't help, direct them to WhatsApp at +1 (939) 382-3332 or email ferreteriarb2@gmail.com.
+5. If you can't help, direct them to WhatsApp at ${WHATSAPP_DISPLAY} or email ${STORE_EMAIL}.
 ${ragContext}`;
 }
 
@@ -110,7 +150,7 @@ function ruleBasedReply(msg: string, ragPairs: ReturnType<typeof retrieve>): str
     return 'Hacemos entregas en todo Puerto Rico en 1–2 días hábiles. ¡Recogida en tienda gratis en aproximadamente 1 hora!';
   }
   if (/devolución|return|reembolso|refund/.test(m)) {
-    return 'Las devoluciones se manejan caso por caso con aprobación del gerente. Contáctanos por WhatsApp al +1 (939) 382-3332 o escríbenos a ferreteriarb2@gmail.com y te atendemos enseguida.';
+    return `Aceptamos devoluciones dentro de los 30 días calendario desde la compra, siempre que el producto esté sin usar y en su empaque original. Contáctanos por WhatsApp al ${WHATSAPP_DISPLAY} para iniciar el proceso.`;
   }
   if (/pago|payment|pay|stripe|tarjeta|card|ath/.test(m)) {
     return 'Aceptamos Visa, Mastercard, Amex, ATH Móvil y más — todo de forma segura con Stripe. Puedes pagar como invitado sin necesidad de crear una cuenta.';
@@ -141,8 +181,8 @@ function ruleBasedReply(msg: string, ragPairs: ReturnType<typeof retrieve>): str
     return '¡Hola! 👋 Soy ABO, tu asistente de Naguabo Commercial. Puedo ayudarte con productos, precios, horarios, envíos o devoluciones. ¿Qué buscas hoy?';
   }
   if (/whatsapp|número|number|teléfono|phone/.test(m)) {
-    return 'El teléfono de la tienda es (787) 874-2120. También puedes contactarnos por WhatsApp al +1 (939) 382-3332.';
+    return `El teléfono de la tienda es (787) 874-2120. También puedes contactarnos por WhatsApp al ${WHATSAPP_DISPLAY}.`;
   }
 
-  return 'Puedo ayudarte con productos, precios, pedidos, envíos, devoluciones y más. También puedes contactarnos por WhatsApp al +1 (939) 382-3332. ¿Qué necesitas?';
+  return `Puedo ayudarte con productos, precios, pedidos, envíos, devoluciones y más. También puedes contactarnos por WhatsApp al ${WHATSAPP_DISPLAY}. ¿Qué necesitas?`;
 }

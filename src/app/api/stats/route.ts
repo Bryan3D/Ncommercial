@@ -17,7 +17,7 @@ export async function GET() {
     }
 
     // Real aggregation
-    return NextResponse.json(buildStats(orders));
+    return NextResponse.json(buildStats(orders as OrderLike[]));
   } catch (e) {
     console.error('[stats]', e);
     return NextResponse.json(generateMockStats());

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Star, ShoppingCart } from 'lucide-react';
 import type { Product } from '@/types';
@@ -25,27 +25,33 @@ export default function ProductCard({ product, variants, preselectedSize }: Prop
   });
 
   useEffect(() => {
-    if (hasVariants && preselectedSize) {
-      setSelected(variants!.find((v) => v.size === preselectedSize) ?? null);
-    }
+    if (!hasVariants) return;
+    setSelected(
+      preselectedSize ? (variants!.find((v) => v.size === preselectedSize) ?? null) : null
+    );
   }, [preselectedSize, variants, hasVariants]);
 
   // The "active" product drives image, link, and ratings (falls back to first/representative)
   const active = selected ?? product;
 
   // Strip size suffix from name when grouping variants
-  const displayName = (() => {
+  const displayName = useMemo(() => {
     const name = product.name;
     if (!hasVariants) return name;
     for (const v of variants!) {
       if (v.size && name.endsWith(` ${v.size}`)) return name.slice(0, -(v.size.length + 1));
     }
     return name;
-  })();
+  }, [product.name, variants, hasVariants]);
 
-  const priceRange = hasVariants
-    ? { min: Math.min(...variants!.map((v) => v.price)), max: Math.max(...variants!.map((v) => v.price)) }
-    : null;
+  const priceRange = useMemo(() => {
+    if (!hasVariants) return null;
+    const { min, max } = variants!.reduce(
+      (acc, v) => ({ min: Math.min(acc.min, v.price), max: Math.max(acc.max, v.price) }),
+      { min: Infinity, max: -Infinity }
+    );
+    return { min, max };
+  }, [variants, hasVariants]);
 
   const showRange = hasVariants && !selected;
 
