@@ -239,6 +239,7 @@ function StoreContent() {
                     }}
                     className="w-full accent-brand"
                     aria-label={t('store.minPrice')}
+                    suppressHydrationWarning
                   />
                 </div>
                 <div>
@@ -255,6 +256,7 @@ function StoreContent() {
                     }}
                     className="w-full accent-brand"
                     aria-label={t('store.maxPrice')}
+                    suppressHydrationWarning
                   />
                 </div>
               </div>
