@@ -1,7 +1,10 @@
 // WhatsApp Business API integration for communication and ads
 const WHATSAPP_API_URL = 'https://graph.facebook.com/v21.0';
 
-export const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || '17875551234';
+export const WHATSAPP_NUMBER =
+  process.env.WHATSAPP_NUMBER ||
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ||
+  '19393823332';
 
 /**
  * Build a click-to-chat WhatsApp link.

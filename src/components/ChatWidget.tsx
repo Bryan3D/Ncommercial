@@ -13,7 +13,7 @@ export default function ChatWidget() {
     {
       role: 'assistant',
       content:
-        '👋 ¡Hola! I\'m your 24/7 Naguabo Commercial assistant. Ask me about products, prices, store hours, or anything else. ¿En qué te puedo ayudar?',
+        '👋 ¡Hola! Soy ABO, tu asistente de Naguabo Commercial disponible 24/7. Pregúntame sobre productos, precios, horarios o cualquier cosa. ¿En qué te puedo ayudar?',
     },
   ]);
   const [input, setInput] = useState('');
@@ -44,7 +44,7 @@ export default function ChatWidget() {
         {
           role: 'assistant',
           content:
-            'Sorry, I had trouble connecting. You can also reach us via WhatsApp at the green button below.',
+            'Lo siento, tuve un problema al conectarme. También puedes contactarnos por WhatsApp usando el botón verde de abajo.',
         },
       ]);
     } finally {
@@ -57,7 +57,7 @@ export default function ChatWidget() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          aria-label="Open chat"
+          aria-label="Abrir chat"
           className="fixed bottom-6 right-6 z-50 bg-brand text-white p-4 rounded-full shadow-lg hover:bg-brand-dark transition-all hover:scale-110"
         >
           <MessageCircle className="w-6 h-6" />
@@ -73,14 +73,14 @@ export default function ChatWidget() {
                 <Bot className="w-5 h-5" />
               </div>
               <div>
-                <div className="font-bold">Naguabo Assistant</div>
+                <div className="font-bold">ABO tu asistente</div>
                 <div className="text-xs flex items-center gap-1">
                   <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                  Online 24/7
+                  En línea 24/7
                 </div>
               </div>
             </div>
-            <button onClick={() => setOpen(false)} aria-label="Close">
+            <button onClick={() => setOpen(false)} aria-label="Cerrar">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -122,7 +122,7 @@ export default function ChatWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && send()}
-              placeholder="Type your question..."
+              placeholder="Escribe tu pregunta..."
               className="flex-1 border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm
                          bg-white dark:bg-slate-700
                          text-gray-900 dark:text-slate-100
@@ -133,7 +133,7 @@ export default function ChatWidget() {
               onClick={send}
               disabled={loading || !input.trim()}
               className="bg-brand text-white px-3 rounded-md hover:bg-brand-dark disabled:opacity-50"
-              aria-label="Send"
+              aria-label="Enviar"
             >
               <Send className="w-5 h-5" />
             </button>

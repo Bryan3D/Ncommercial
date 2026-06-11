@@ -1,8 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { mockProducts, mockCategories } from '@/lib/mock-data';
 import { retrieve, formatContext } from '@/lib/rag';
+import { WHATSAPP_NUMBER } from '@/lib/whatsapp';
 
 interface ChatMessage { role: 'user' | 'assistant'; content: string; }
+
+const STORE_EMAIL = process.env.STORE_CONTACT_EMAIL || 'ferreteriarb2@gmail.com';
+// Format raw digits (e.g. "19393823332") as "+1 (939) 382-3332" for display
+const WHATSAPP_DISPLAY = WHATSAPP_NUMBER.replace(/^1(\d{3})(\d{3})(\d{4})$/, '+1 ($1) $2-$3');
+
+// Simple in-process rate limiter: 20 requests per IP per minute
+// Resets on cold start; add upstash/ratelimit for durable cross-instance limiting
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + 60_000 });
+    return true;
+  }
+  if (entry.count >= 20) return false;
+  entry.count++;
+  return true;
+}
 
 const TOP_LEVEL_CATS = mockCategories
   .filter((c) => !c.parentSlug)
@@ -10,8 +30,28 @@ const TOP_LEVEL_CATS = mockCategories
   .join(', ');
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json({ reply: 'Demasiadas solicitudes. Por favor intenta de nuevo en un momento.' }, { status: 429 });
+  }
+
   try {
-    const { messages } = (await req.json()) as { messages: ChatMessage[] };
+    const body = await req.json().catch(() => null);
+    if (!body || !Array.isArray(body.messages) || body.messages.length === 0) {
+      return NextResponse.json({ reply: '¿En qué te puedo ayudar?' });
+    }
+    const messages: ChatMessage[] = body.messages
+      .filter((m: unknown) => {
+        if (!m || typeof m !== 'object') return false;
+        const role = (m as Record<string, unknown>).role;
+        return role === 'user' || role === 'assistant';
+      })
+      .slice(-20) // cap at 20 turns
+      .map((m: Record<string, unknown>) => ({
+        role: m.role as 'user' | 'assistant',
+        content: String(m.content ?? '').slice(0, 500), // 500 char max per message
+      }));
+
     const userMsg = messages[messages.length - 1]?.content || '';
 
     // Retrieve relevant Q&A pairs from the bilingual knowledge base
@@ -47,7 +87,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     console.error('[chat]', e);
     return NextResponse.json({
-      reply: 'Lo siento, tuve un problema. / Sorry, I had trouble responding. Please try WhatsApp at (787) 874-2120.',
+      reply: `Lo siento, tuve un problema. Contáctanos por WhatsApp al ${WHATSAPP_DISPLAY} o por email a ${STORE_EMAIL}.`,
     });
   }
 }
@@ -61,18 +101,18 @@ function buildSystemPrompt(ragContext: string): string {
     .map((p) => `${p.name} — $${p.price.toFixed(2)} (SKU: ${p.sku})`)
     .join('\n  ');
 
-  return `You are the friendly, knowledgeable 24/7 bilingual assistant for Naguabo Commercial — a hardware and home-improvement store in Naguabo, Puerto Rico (similar to Home Depot or Lowe's).
+  return `Eres ABO, el asistente amigable y experto de Naguabo Commercial disponible 24/7 — una ferretería y tienda de mejoras para el hogar en Naguabo, Puerto Rico (similar a Home Depot o Lowe's).
 
-IDENTITY & LANGUAGE
-• Respond in the same language the customer uses. If they write in Spanish, reply in Spanish. If English, reply in English. If mixed, mirror their mix.
-• Be warm, concise, and helpful. Use emoji sparingly (1 per reply max).
+IDENTIDAD E IDIOMA
+• Responde siempre en español. Si el cliente escribe en inglés, responde en español de todas formas, pero puedes incluir la traducción entre paréntesis si ayuda.
+• Sé cálido, conciso y útil. Usa emojis con moderación (máximo 1 por respuesta).
 
 STORE DETAILS
 • Address: 20 Calle Venecia, Naguabo, Puerto Rico 00718
-• Phone: (787) 874-2120 | Email: info@naguabo-commercial.com
-• Online: Open 24/7 | Physical store: 7 AM – 9 PM daily
+• Teléfono tienda: (787) 874-2120 | WhatsApp: ${WHATSAPP_DISPLAY} | Email: ${STORE_EMAIL}
+• Online: Open 24/7 | Physical store: Monday–Saturday 7 AM – 5 PM (closed Sundays)
 • Free in-store pickup in ~1 hour | Fast delivery across Puerto Rico
-• Secure checkout via Stripe | 90-day returns
+• Secure checkout via Stripe | Devoluciones aceptadas dentro de los 30 días calendario desde la compra (producto original sin usar)
 
 DEPARTMENTS
 ${TOP_LEVEL_CATS}
@@ -85,7 +125,7 @@ INSTRUCTIONS
 2. If the customer asks about a product you don't have a fact for, give general guidance and suggest they check the store website or contact via WhatsApp.
 3. Never make up prices or stock levels beyond what is in the facts.
 4. Keep answers under 4 sentences unless the customer explicitly asks for more detail.
-5. If you can't help, direct them to WhatsApp at (787) 874-2120.
+5. If you can't help, direct them to WhatsApp at ${WHATSAPP_DISPLAY} or email ${STORE_EMAIL}.
 ${ragContext}`;
 }
 
@@ -104,16 +144,16 @@ function ruleBasedReply(msg: string, ragPairs: ReturnType<typeof retrieve>): str
   const m = msg.toLowerCase();
 
   if (/horario|hours|open|abierto|cuándo|cuando/.test(m)) {
-    return 'Estamos abiertos 24/7 online. Our physical store in Naguabo is open daily 7 AM – 9 PM. / La tienda física está abierta de 7 AM a 9 PM todos los días. ¿Algo más?';
+    return 'Estamos disponibles en línea 24/7. La tienda física en Naguabo abre de lunes a sábado, de 7 AM a 5 PM (cerrado los domingos). ¿Algo más en que pueda ayudarte?';
   }
   if (/envío|shipping|delivery|entrega/.test(m)) {
-    return 'Hacemos entregas en todo Puerto Rico. / We ship across Puerto Rico in 1–2 business days. Free in-store pickup in ~1 hour!';
+    return 'Hacemos entregas en todo Puerto Rico en 1–2 días hábiles. ¡Recogida en tienda gratis en aproximadamente 1 hora!';
   }
   if (/devolución|return|reembolso|refund/.test(m)) {
-    return 'Ofrecemos devoluciones en 90 días. / We offer 90-day returns. Bring the item with receipt to our Naguabo store or contact us via WhatsApp.';
+    return `Aceptamos devoluciones dentro de los 30 días calendario desde la compra, siempre que el producto esté sin usar y en su empaque original. Contáctanos por WhatsApp al ${WHATSAPP_DISPLAY} para iniciar el proceso.`;
   }
   if (/pago|payment|pay|stripe|tarjeta|card|ath/.test(m)) {
-    return 'Aceptamos Visa, Mastercard, Amex, ATH Móvil y más — todo seguro con Stripe. / We accept major cards + ATH Móvil, secured by Stripe. Guest checkout available, no account needed.';
+    return 'Aceptamos Visa, Mastercard, Amex, ATH Móvil y más — todo de forma segura con Stripe. Puedes pagar como invitado sin necesidad de crear una cuenta.';
   }
   if (/precio|price|cost|cuesta|cuanto/.test(m)) {
     const matches = mockProducts
@@ -122,27 +162,27 @@ function ruleBasedReply(msg: string, ragPairs: ReturnType<typeof retrieve>): str
       )
       .slice(0, 3);
     if (matches.length) {
-      return matches.map((p) => `• ${p.name}: $${p.price.toFixed(2)}`).join('\n') + '\n\n¿Deseas añadir algo al carrito? / Want to add any to your cart?';
+      return matches.map((p) => `• ${p.name}: $${p.price.toFixed(2)}`).join('\n') + '\n\n¿Deseas añadir alguno al carrito?';
     }
   }
   if (/herramienta|tool|drill|saw|martillo|taladro/.test(m)) {
-    return 'Tenemos herramientas DEWALT, RYOBI, Stanley y más. / We stock DEWALT, RYOBI, Stanley, and more. Browse at /store?category=tools';
+    return 'Tenemos herramientas DEWALT, RYOBI, Stanley y más. Explora nuestra selección en /store?category=tools';
   }
   if (/pintura|paint/.test(m)) {
-    return 'BEHR Premium Plus Interior Paint — $32.98/gal en miles de colores. / Available in thousands of colors. Ver más en /store?category=paint';
+    return 'BEHR Premium Plus Interior Paint — $32.98/gal disponible en miles de colores. Ver más en /store?category=paint';
   }
   if (/techo|roof|impermeab|sealant|sellado/.test(m)) {
-    return 'Tenemos productos CROSSCO® y Bull-Bond® para impermeabilizar techos. / We carry CROSSCO® and Bull-Bond® roof sealants and coatings. Browse at /store?category=roof-sealing';
+    return 'Tenemos productos CROSSCO® y Bull-Bond® para impermeabilizar techos. Ver más en /store?category=roof-sealing';
   }
   if (/cemento|concreto|mortero|grout|thinset|azulejo|tile/.test(m)) {
-    return 'Tenemos una amplia selección de morteros, lechadas y adhesivos WECO, Bull-Bond® y más. / We carry WECO, Bull-Bond®, and more. Browse at /store?category=building-materials';
+    return 'Tenemos una amplia selección de morteros, lechadas y adhesivos WECO, Bull-Bond® y más. Ver más en /store?category=building-materials';
   }
   if (/hola|hi|hello|buenos|good|hey/.test(m)) {
-    return '¡Hola! 👋 Soy tu asistente de Naguabo Commercial. / I\'m your Naguabo Commercial assistant. Ask me about products, prices, hours, shipping, or returns. ¿Qué buscas hoy?';
+    return '¡Hola! 👋 Soy ABO, tu asistente de Naguabo Commercial. Puedo ayudarte con productos, precios, horarios, envíos o devoluciones. ¿Qué buscas hoy?';
   }
   if (/whatsapp|número|number|teléfono|phone/.test(m)) {
-    return 'Puedes contactarnos por WhatsApp al (787) 874-2120 o llamarnos directamente. / You can reach us on WhatsApp or by phone at (787) 874-2120.';
+    return `El teléfono de la tienda es (787) 874-2120. También puedes contactarnos por WhatsApp al ${WHATSAPP_DISPLAY}.`;
   }
 
-  return 'Puedo ayudarte con productos, precios, pedidos, envíos, devoluciones y más. / I can help with products, orders, shipping, returns, or store info. También puedes contactarnos por WhatsApp al (787) 874-2120. ¿Qué necesitas?';
+  return `Puedo ayudarte con productos, precios, pedidos, envíos, devoluciones y más. También puedes contactarnos por WhatsApp al ${WHATSAPP_DISPLAY}. ¿Qué necesitas?`;
 }

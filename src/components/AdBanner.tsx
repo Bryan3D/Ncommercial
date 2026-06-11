@@ -79,7 +79,7 @@ const slides: Slide[] = [
     headline: 'Your Ad Could Be Here',
     sub: 'Reach thousands of customers in Naguabo and across Puerto Rico. Contact us to advertise.',
     bg: 'from-slate-600 to-slate-800',
-    cta: { text: 'Contact Us', href: `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '17875551234'}` },
+    cta: { text: 'Contact Us', href: `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '19393823332'}` },
   },
 ];
 

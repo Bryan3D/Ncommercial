@@ -3,14 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   
-  // ⬇️ Add these two
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
@@ -18,7 +10,7 @@ const nextConfig = {
     ],
   },
   env: {
-    WHATSAPP_NUMBER: process.env.WHATSAPP_NUMBER || '17875551234',
+    WHATSAPP_NUMBER: process.env.WHATSAPP_NUMBER || '19393823332',
   },
 };
 
